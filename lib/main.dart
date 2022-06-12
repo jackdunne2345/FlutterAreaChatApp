@@ -86,10 +86,9 @@ class _HomeViewState extends State<HomeView> {
 }
 
 //login screen widget
-
+// constent ussers atm
 const users = const {
   'test@test.com': 'test',
-  'hunter@gmail.com': 'hunter',
 };
 
 class LoginScreen extends StatelessWidget {
