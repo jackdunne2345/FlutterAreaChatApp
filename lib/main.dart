@@ -7,8 +7,16 @@ import 'package:area_app/pages/post_page.dart';
 import 'package:area_app/pages/profile_page.dart';
 import 'package:flutter/material.dart'; // this imports widgets
 import 'package:flutter_login/flutter_login.dart'; //login package
+//firebase imports
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   //runApp is a flutter function that inflates
   //the flutter built ui to the screen
   //this funciton takes a "widget" as an argument
