@@ -6,6 +6,7 @@ import 'package:area_app/pages/map_page.dart';
 import 'package:area_app/pages/post_page.dart';
 import 'package:area_app/pages/profile_page.dart';
 import 'package:flutter/material.dart'; // this imports widgets
+import 'package:flutter_login/flutter_login.dart'; //login package
 
 void main() {
   //runApp is a flutter function that inflates
@@ -26,7 +27,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: HomeView());
+    return MaterialApp(home: LoginScreen());
   }
 }
 
@@ -84,8 +85,59 @@ class _HomeViewState extends State<HomeView> {
   }
 }
 
+//login screen widget
 
+const users = const {
+  'test@test.com': 'test',
+  'hunter@gmail.com': 'hunter',
+};
 
+class LoginScreen extends StatelessWidget {
+  Duration get loginTime => Duration(milliseconds: 2250);
 
+  Future<String?> _authUser(LoginData data) {
+    debugPrint('Name: ${data.name}, Password: ${data.password}');
+    return Future.delayed(loginTime).then((_) {
+      if (!users.containsKey(data.name)) {
+        return 'User not exists';
+      }
+      if (users[data.name] != data.password) {
+        return 'Password does not match';
+      }
+      return null;
+    });
+  }
 
-//login screen widget test2
+  Future<String?> _signupUser(SignupData data) {
+    debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
+    return Future.delayed(loginTime).then((_) {
+      return null;
+    });
+  }
+
+  Future<String> _recoverPassword(String name) {
+    debugPrint('Name: $name');
+    return Future.delayed(loginTime).then((_) {
+      if (!users.containsKey(name)) {
+        return 'User not exists';
+      }
+      return "hi";
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FlutterLogin(
+      title: 'Area_App',
+      logo: AssetImage('assets/images/logo.png'),
+      onLogin: _authUser,
+      onSignup: _signupUser,
+      onSubmitAnimationCompleted: () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => HomeView(),
+        ));
+      },
+      onRecoverPassword: _recoverPassword,
+    );
+  }
+}
