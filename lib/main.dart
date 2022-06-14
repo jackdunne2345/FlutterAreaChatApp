@@ -95,9 +95,6 @@ class _HomeViewState extends State<HomeView> {
 
 //login screen widget
 // constent ussers atm
-const users = const {
-  'test@test.com': 'test',
-};
 
 class LoginScreen extends StatelessWidget {
   Duration get loginTime => Duration(milliseconds: 2250);
@@ -105,29 +102,35 @@ class LoginScreen extends StatelessWidget {
   Future<String?> _authUser(LoginData data) {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
     return Future.delayed(loginTime).then((_) {
-      if (!users.containsKey(data.name)) {
-        return 'User not exists';
+      try {
+        //await auth.signInWithEmailAndPassword(email:data.name , password: data.password);
+        return "signed in";
+      } on FirebaseAuthException catch (e) {
+        return e.message;
       }
-      if (users[data.name] != data.password) {
-        return 'Password does not match';
-      }
-      return null;
     });
   }
 
   Future<String?> _signupUser(SignupData data) {
     debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
-    return Future.delayed(loginTime).then((_) {
-      return null;
+
+    return Future.delayed(loginTime).then((_) async {
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: data.name!, password: data.password!);
+        return "signed up";
+      } on FirebaseAuthException catch (e) {
+        return e.message;
+      }
     });
   }
 
   Future<String> _recoverPassword(String name) {
     debugPrint('Name: $name');
     return Future.delayed(loginTime).then((_) {
-      if (!users.containsKey(name)) {
-        return 'User not exists';
-      }
+      //  if (!users.containsKey(name)) {
+      // return 'User not exists';
+      // }
       return "hi";
     });
   }
