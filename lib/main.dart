@@ -104,9 +104,8 @@ class LoginScreen extends StatelessWidget {
     try {
       FirebaseAuth.instance.signInWithEmailAndPassword(
           email: data.name, password: data.password);
-      debugPrint("signed in");
       return Future.delayed(loginTime).then((_) {
-        return null;
+        return "signed in";
       });
     } on FirebaseAuthException catch (e) {
       return Future.delayed(loginTime).then((_) {
@@ -117,16 +116,17 @@ class LoginScreen extends StatelessWidget {
 
   Future<String?> _signupUser(SignupData data) {
     debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
-
-    return Future.delayed(loginTime).then((_) async {
-      try {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: data.name!, password: data.password!);
+    try {
+      FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: data.name!, password: data.password!);
+      return Future.delayed(loginTime).then((_) async {
         return "signed up";
-      } on FirebaseAuthException catch (e) {
+      });
+    } on FirebaseAuthException catch (e) {
+      return Future.delayed(loginTime).then((_) async {
         return e.message;
-      }
-    });
+      });
+    }
   }
 
   Future<String> _recoverPassword(String name) {

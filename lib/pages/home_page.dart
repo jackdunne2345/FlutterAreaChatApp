@@ -11,6 +11,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(backgroundColor: Colors.amber, body: Text("home")));
+        home: Scaffold(
+            backgroundColor: Colors.amber,
+            body: Text("home", textAlign: TextAlign.center)));
   }
 }
