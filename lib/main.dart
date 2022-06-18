@@ -8,9 +8,9 @@ import 'package:area_app/pages/profile_page.dart';
 import 'package:flutter/material.dart'; // this imports widgets
 import 'package:flutter_login/flutter_login.dart'; //login package
 //firebase imports
+import 'firebas.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -97,36 +97,14 @@ class _HomeViewState extends State<HomeView> {
 // constent ussers atm
 
 class LoginScreen extends StatelessWidget {
-  Duration get loginTime => Duration(milliseconds: 2250);
-
   Future<String?> _authUser(LoginData data) {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
-    try {
-      FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: data.name, password: data.password);
-      return Future.delayed(loginTime).then((_) {
-        return "signed in";
-      });
-    } on FirebaseAuthException catch (e) {
-      return Future.delayed(loginTime).then((_) {
-        return e.message;
-      });
-    }
+    return logIn(data.name, data.password);
   }
 
   Future<String?> _signupUser(SignupData data) {
     debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
-    try {
-      FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: data.name!, password: data.password!);
-      return Future.delayed(loginTime).then((_) async {
-        return "signed up";
-      });
-    } on FirebaseAuthException catch (e) {
-      return Future.delayed(loginTime).then((_) async {
-        return e.message;
-      });
-    }
+    return signUp(data.name!, data.password!);
   }
 
   Future<String> _recoverPassword(String name) {
