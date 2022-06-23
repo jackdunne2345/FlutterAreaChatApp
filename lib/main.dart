@@ -8,7 +8,7 @@ import 'package:area_app/pages/profile_page.dart';
 import 'package:flutter/material.dart'; // this imports widgets
 import 'package:flutter_login/flutter_login.dart'; //login package
 //firebase imports
-import 'firebas.dart';
+import 'firebase.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 

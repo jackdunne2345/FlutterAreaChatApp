@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-//login pacagae
 
 Duration get loginTime => Duration(milliseconds: 2250);
 Future<String?> logIn(String name, String password) async {
