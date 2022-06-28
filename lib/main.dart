@@ -11,6 +11,7 @@ import 'package:flutter_login/flutter_login.dart'; //login package
 import 'firebase.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +47,12 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
+FirebaseAuth auth = FirebaseAuth.instance;
+
 class _HomeViewState extends State<HomeView> {
+//current user
+  User? user = auth.currentUser;
+
   //this line under createsa a page controller that i call in the pageview to set the intial page to the page in position one in the array
   PageController pageController = PageController(initialPage: 1);
   get onPressed => null;
@@ -82,11 +88,13 @@ class _HomeViewState extends State<HomeView> {
         body: PageView(
             //page view allows widgets to be rendered in the scaffold
             controller: pageController,
-            children: const [
+            children: [
               //these are the pages within the page view byu default it scrolls horizzontly
-              MapPage(),
-              HomePage(),
-              ProfilePage()
+              const MapPage(),
+              const HomePage(),
+              ProfilePage(
+                user: user!,
+              )
             ]),
       ),
     );
