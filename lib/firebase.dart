@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 Duration get loginTime => Duration(milliseconds: 2250);
 Future<String?> logIn(String name, String password) async {
   try {
-    FirebaseAuth.instance
+    await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: name, password: password);
     return Future.delayed(loginTime).then((_) {
       return null;
@@ -17,7 +17,7 @@ Future<String?> logIn(String name, String password) async {
 
 Future<String?> signUp(String name, String password) async {
   try {
-    FirebaseAuth.instance
+    await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: name, password: password);
     return Future.delayed(loginTime).then((_) async {
       //this null retunr means there is no errors and will laucnh app

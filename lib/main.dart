@@ -111,7 +111,7 @@ class LoginScreen extends StatelessWidget {
   }
 
   Future<String?> _signupUser(SignupData data) {
-    debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
+    debugPrint('Signup Email: ${data.name}, Password: ${data.password}');
     return signUp(data.name!, data.password!);
   }
 
@@ -134,7 +134,7 @@ class LoginScreen extends StatelessWidget {
       onSignup: _signupUser,
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => HomeView(),
+          builder: (context) => const HomeView(),
         ));
       },
       onRecoverPassword: _recoverPassword,
