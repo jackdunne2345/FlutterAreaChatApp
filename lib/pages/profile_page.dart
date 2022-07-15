@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '/firebase.dart';
 
 class ProfilePage extends StatefulWidget {
   User user;
@@ -73,7 +74,7 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   User user;
-
+  String currentBio = "";
   _EditProfileState(this.user);
   @override
   Widget build(BuildContext context) {
@@ -84,14 +85,12 @@ class _EditProfileState extends State<EditProfile> {
             Container(
               margin: const EdgeInsets.all(10),
               padding: const EdgeInsets.all(10),
-              child: ListView(), //list view of images need to come back to
-            ),
-            Container(
-              margin: const EdgeInsets.all(10),
-              padding: const EdgeInsets.all(10),
               child: TextField(
                 decoration: InputDecoration(
                     border: OutlineInputBorder(), hintText: user.email),
+                onChanged: (text) => setState(() {
+                  currentBio = text;
+                }),
               ),
             ),
             Container(
@@ -102,7 +101,13 @@ class _EditProfileState extends State<EditProfile> {
                       foregroundColor:
                           MaterialStateProperty.all<Color>(Colors.white),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      giveData(currentBio, user.uid);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ProfilePage(
+                                user: user,
+                              )));
+                    },
                     child: Text('Save Profile')))
           ],
         ),
