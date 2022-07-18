@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_new, prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +16,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   User user;
+
   _ProfilePageState(this.user);
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,28 @@ class _ProfilePageState extends State<ProfilePage> {
             Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(10),
-                child: Text(user.email!)),
+                //stream builder builds itself based on snapshot fed inito it as it updates
+                child: FutureBuilder<DocumentSnapshot>(
+                  future: userData.doc(user.uid).get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text("Something went wrong");
+                    }
+
+                    if (snapshot.hasData && !snapshot.data!.exists) {
+                      return Text("Document does not exist");
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      Map<String, dynamic> data =
+                          snapshot.data!.data() as Map<String, dynamic>;
+                      return Text("${data['bio']}");
+                    }
+
+                    return Text("loading");
+                  },
+                )),
             Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(10),
@@ -52,6 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
+                          //make it impossible for someone to accses this function if they dont have the corret creditials
                           builder: (context) => EditProfile(
                                 user: user,
                               )));
@@ -87,7 +111,7 @@ class _EditProfileState extends State<EditProfile> {
               padding: const EdgeInsets.all(10),
               child: TextField(
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: user.email),
+                    border: OutlineInputBorder(), hintText: "enter new bio"),
                 onChanged: (text) => setState(() {
                   currentBio = text;
                 }),

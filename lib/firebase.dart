@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 Duration get loginTime => Duration(milliseconds: 2250);
 Future<String?> logIn(String name, String password) async {
@@ -43,5 +44,12 @@ final CollectionReference userData =
     FirebaseFirestore.instance.collection('userCollection');
 
 Future giveData(String bio, String uid) async {
-  return await userData.doc(uid).set({'bio': bio});
+  return await userData
+      .doc(uid)
+      .set({'bio': bio})
+      .then((value) => print("Data added"))
+      .catchError((error) => print("Failed to add data: $error"));
 }
+
+//get a users bio in a text widget
+
