@@ -1,4 +1,7 @@
+import 'package:area_app/main.dart';
 import 'package:flutter/material.dart';
+import '/firebase.dart';
+import 'package:geolocator/geolocator.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({Key? key}) : super(key: key);
@@ -10,6 +13,38 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.red[200], body: Text("map"));
+    String post = "";
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              decoration: InputDecoration(
+                  border: const OutlineInputBorder(), hintText: "enter post"),
+              onChanged: (text) => setState(() {
+                post = text;
+              }),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
+            child: ElevatedButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+              onPressed: () {
+                // givePostData(post, auth.currentUser?.uid,
+                // _determinePosition();
+              },
+              child: Text('post'),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

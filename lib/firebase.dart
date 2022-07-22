@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 Duration get loginTime => Duration(milliseconds: 2250);
 Future<String?> logIn(String name, String password) async {
@@ -24,7 +24,7 @@ Future<String?> signUp(String name, String password) async {
     User user = create.user!;
     //set user data to default data when account is made
     String defBio = "Hi! I'm new :)";
-    giveData(defBio, user.uid);
+    giveUserData(defBio, user.uid);
 
     return Future.delayed(loginTime).then((_) async {
       //this null retunr means there is no errors and will laucnh app
@@ -43,13 +43,26 @@ Future<String?> signUp(String name, String password) async {
 final CollectionReference userData =
     FirebaseFirestore.instance.collection('userCollection');
 
-Future giveData(String bio, String uid) async {
-  return await userData
-      .doc(uid)
-      .set({'bio': bio})
-      .then((value) => print("Data added"))
-      .catchError((error) => print("Failed to add data: $error"));
+final CollectionReference postData =
+    FirebaseFirestore.instance.collection('posts');
+
+Future giveUserData(String bio, String uid) async {
+  return await userData.doc(uid).set({'bio': bio});
+  //  .then((value) => print("Data added"))
+  // .catchError((error) => print("Failed to add data: $error"));
 }
 
-//get a users bio in a text widget
+Future givePostData(
+    String postText, String? uid, double longitude, double latitude) async {
+  return await postData.doc().set({
+    'post_text': postText,
+    'longitude': longitude,
+    'latitude': latitude,
+    'uid': uid
+  });
+}
+
+//get phone location
+
+
 

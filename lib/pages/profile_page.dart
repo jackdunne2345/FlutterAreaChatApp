@@ -75,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          //make it impossible for someone to accses this function if they dont have the corret creditials
+                          //i have to make it impossible for someone to accses this function if they dont have the corret creditials
                           builder: (context) => EditProfile(
                                 user: user,
                               )));
@@ -126,7 +126,7 @@ class _EditProfileState extends State<EditProfile> {
                           MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     onPressed: () {
-                      giveData(currentBio, user.uid);
+                      giveUserData(currentBio, user.uid);
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ProfilePage(
                                 user: user,
