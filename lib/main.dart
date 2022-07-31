@@ -86,11 +86,12 @@ class _HomeViewState extends State<HomeView> {
           ],
         ),
         body: PageView(
+            pageSnapping: true,
             //page view allows widgets to be rendered in the scaffold
             controller: pageController,
             children: [
               //these are the pages within the page view byu default it scrolls horizzontly
-              const MapPage(),
+              MapPage(),
               const HomePage(),
               ProfilePage(
                 user: user!,

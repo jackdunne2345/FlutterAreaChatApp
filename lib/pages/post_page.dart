@@ -1,7 +1,5 @@
-import 'package:area_app/main.dart';
 import 'package:flutter/material.dart';
 import '/firebase.dart';
-import 'package:geolocator/geolocator.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({Key? key}) : super(key: key);
