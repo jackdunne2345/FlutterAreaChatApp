@@ -12,7 +12,19 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-            backgroundColor: Colors.amber,
-            body: Text("home", textAlign: TextAlign.center)));
+            body: Container(
+      child: PostWidget(),
+    )));
+  }
+}
+
+class PostWidget extends StatelessWidget {
+  const PostWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(),
+    );
   }
 }

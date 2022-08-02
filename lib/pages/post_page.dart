@@ -1,47 +1,56 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import '/firebase.dart';
 
 class PostPage extends StatefulWidget {
-  const PostPage({Key? key}) : super(key: key);
+  String longitude;
+  String latitude;
+  PostPage({Key? key, required this.longitude, required this.latitude})
+      : super(key: key);
 
   @override
-  State<PostPage> createState() => _PostPageState();
+  State<PostPage> createState() => _PostPageState(longitude, latitude);
 }
 
 class _PostPageState extends State<PostPage> {
+  String longitude;
+  String latitude;
+  String postGive = "";
+  _PostPageState(this.longitude, this.latitude);
   @override
   Widget build(BuildContext context) {
-    String post = "";
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.all(10),
-            child: TextField(
-              decoration: InputDecoration(
-                  border: const OutlineInputBorder(), hintText: "enter post"),
-              onChanged: (text) => setState(() {
-                post = text;
-              }),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.all(10),
-            child: ElevatedButton(
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+    return MaterialApp(
+      home: Scaffold(
+        body: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "What you wanna tell every one?"),
+                onChanged: (text) => setState(() {
+                  postGive = text;
+                }),
               ),
-              onPressed: () {
-                // givePostData(post, auth.currentUser?.uid,
-                // _determinePosition();
-              },
-              child: Text('post'),
             ),
-          )
-        ],
+            Container(
+                margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
+                child: ElevatedButton(
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    onPressed: () {
+                      givePostData(
+                          postGive, auth.currentUser!.uid, longitude, latitude);
+                      Navigator.pop(context);
+                    },
+                    child: Text('Post')))
+          ],
+        ),
       ),
     );
   }
