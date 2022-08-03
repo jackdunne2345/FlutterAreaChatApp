@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:geolocator/geolocator.dart';
 
 Duration get loginTime => Duration(milliseconds: 2250);
 Future<String?> logIn(String name, String password) async {
@@ -52,13 +51,14 @@ Future giveUserData(String bio, String uid) async {
   // .catchError((error) => print("Failed to add data: $error"));
 }
 
-Future givePostData(
-    String postText, String? uid, String longitude, String latitude) async {
+Future givePostData(String postText, String? uid, String longitude,
+    String latitude, String countryCode) async {
   return await postData.doc().set({
     'post_text': postText,
     'longitude': longitude,
     'latitude': latitude,
-    'uid': uid
+    'uid': uid,
+    'country_code': countryCode
   });
 }
 

@@ -44,11 +44,11 @@ class _PostPageState extends State<PostPage> {
                           MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     onPressed: () {
-                      givePostData(
-                          postGive, auth.currentUser!.uid, longitude, latitude);
+                      givePostData(postGive, auth.currentUser!.uid, longitude,
+                          latitude, "test");
                       Navigator.pop(context);
                     },
-                    child: Text('Post')))
+                    child: Text('Post'))),
           ],
         ),
       ),
