@@ -69,47 +69,48 @@ class _HomeViewState extends State<HomeView> {
     _updatePosition();
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          // this is the app bar and will render above the body wich contains the page view
-          backgroundColor: Colors.blue,
-          elevation: 0,
-          title: const Text(
-            "Area_App",
-            style: TextStyle(color: Colors.white),
+          appBar: AppBar(
+            // this is the app bar and will render above the body wich contains the page view
+            backgroundColor: Colors.blue,
+            elevation: 0,
+            title: const Text(
+              "Area App",
+              style: TextStyle(color: Colors.white),
+            ),
+            actions: [
+              // ignore: prefer_const_constructors
+              IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => PostPage(
+                              latitude: latitude,
+                              longitude: longitude,
+                            )));
+                  },
+                  icon: Icon(Icons.add_box_outlined)),
+              // ignore: prefer_const_constructors
+              IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const ChatPage()));
+                  },
+                  icon: Icon(Icons.chat_bubble_outline))
+            ],
           ),
-          actions: [
-            // ignore: prefer_const_constructors
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PostPage(
-                            latitude: latitude,
-                            longitude: longitude,
-                          )));
-                },
-                icon: Icon(Icons.add_box_outlined)),
-            // ignore: prefer_const_constructors
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ChatPage()));
-                },
-                icon: Icon(Icons.chat_bubble_outline))
-          ],
-        ),
-        body: PageView(
-            pageSnapping: true,
-            //page view allows widgets to be rendered in the scaffold
-            controller: pageController,
-            children: [
-              //these are the pages within the page view byu default it scrolls horizzontly
-              MapPage(),
-              const HomePage(),
-              ProfilePage(
-                user: user!,
-              )
-            ]),
-      ),
+          body: MapPage()
+          // PageView(
+          //     pageSnapping: true,
+          //     //page view allows widgets to be rendered in the scaffold
+          //     controller: pageController,
+          //     children: [
+          //       //these are the pages within the page view byu default it scrolls horizzontly
+          //       MapPage(),
+          //       HomePage(),
+          //       ProfilePage(
+          //         user: user!,
+          //       )
+          //     ]),
+          ),
     );
   }
 
@@ -188,7 +189,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      title: 'Area_App',
+      title: 'Area App',
       logo: AssetImage('assets/images/logo.png'),
       onLogin: _authUser,
       onSignup: _signupUser,
