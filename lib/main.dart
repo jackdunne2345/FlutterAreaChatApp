@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
-import 'package:area_app/pages/chat_page.dart';
 import 'package:area_app/pages/home_page.dart';
 import 'package:area_app/pages/map_page.dart';
 import 'package:area_app/pages/post_page.dart';
@@ -69,48 +68,41 @@ class _HomeViewState extends State<HomeView> {
     _updatePosition();
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-            // this is the app bar and will render above the body wich contains the page view
-            backgroundColor: Colors.blue,
-            elevation: 0,
-            title: const Text(
-              "Area App",
-              style: TextStyle(color: Colors.white),
-            ),
-            actions: [
-              // ignore: prefer_const_constructors
-              IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PostPage(
-                              latitude: latitude,
-                              longitude: longitude,
-                            )));
-                  },
-                  icon: Icon(Icons.add_box_outlined)),
-              // ignore: prefer_const_constructors
-              IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const ChatPage()));
-                  },
-                  icon: Icon(Icons.chat_bubble_outline))
-            ],
+        appBar: AppBar(
+          // this is the app bar and will render above the body wich contains the page view
+          backgroundColor: Colors.blue,
+          elevation: 0,
+          title: const Text(
+            "Area App",
+            style: TextStyle(color: Colors.white),
           ),
-          body: MapPage()
-          // PageView(
-          //     pageSnapping: true,
-          //     //page view allows widgets to be rendered in the scaffold
-          //     controller: pageController,
-          //     children: [
-          //       //these are the pages within the page view byu default it scrolls horizzontly
-          //       MapPage(),
-          //       HomePage(),
-          //       ProfilePage(
-          //         user: user!,
-          //       )
-          //     ]),
-          ),
+          actions: [
+            // ignore: prefer_const_constructors
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PostPage(
+                            latitude: 53.3346,
+                            longitude: -6.2733,
+                          )));
+                },
+                icon: Icon(Icons.add_box_outlined)),
+            // ignore: prefer_const_constructors
+          ],
+        ),
+        body: PageView(
+            pageSnapping: true,
+            //page view allows widgets to be rendered in the scaffold
+            controller: pageController,
+            children: [
+              //these are the pages within the page view byu default it scrolls horizzontly
+              MapPage(),
+              const HomePage(),
+              ProfilePage(
+                uid: auth.currentUser!.uid,
+              )
+            ]),
+      ),
     );
   }
 

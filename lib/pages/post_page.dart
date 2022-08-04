@@ -1,10 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import '../main.dart';
 import '/firebase.dart';
 
 class PostPage extends StatefulWidget {
-  String longitude;
-  String latitude;
+  double longitude;
+  double latitude;
   PostPage({Key? key, required this.longitude, required this.latitude})
       : super(key: key);
 
@@ -13,8 +15,8 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPageState extends State<PostPage> {
-  String longitude;
-  String latitude;
+  double longitude;
+  double latitude;
   String postGive = "";
   _PostPageState(this.longitude, this.latitude);
   @override
@@ -43,9 +45,14 @@ class _PostPageState extends State<PostPage> {
                       foregroundColor:
                           MaterialStateProperty.all<Color>(Colors.white),
                     ),
-                    onPressed: () {
-                      givePostData(postGive, auth.currentUser!.uid, longitude,
-                          latitude, "test");
+                    onPressed: () async {
+                      givePostData(
+                          postGive,
+                          auth.currentUser!.uid,
+                          longitude.toString(),
+                          latitude.toString(),
+                          await getPostCode(longitude, latitude),
+                          auth.currentUser!.email);
                       Navigator.pop(context);
                     },
                     child: Text('Post'))),
@@ -55,3 +62,6 @@ class _PostPageState extends State<PostPage> {
     );
   }
 }
+
+// i calcualte what post code marker youa re clsoest to using geolocator package
+

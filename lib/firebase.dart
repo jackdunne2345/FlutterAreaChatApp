@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'dart:math';
 
 Duration get loginTime => Duration(milliseconds: 2250);
 Future<String?> logIn(String name, String password) async {
@@ -52,16 +58,35 @@ Future giveUserData(String bio, String uid) async {
 }
 
 Future givePostData(String postText, String? uid, String longitude,
-    String latitude, String countryCode) async {
+    String latitude, String countryCode, String? email) async {
   return await postData.doc().set({
     'post_text': postText,
     'longitude': longitude,
     'latitude': latitude,
     'uid': uid,
-    'country_code': countryCode
+    'email': email,
+    'post_code': countryCode
   });
 }
 
-//get phone location
+//get post code
+// i calcualte what post code marker youa re clsoest to using geolocator package
+Future<String> getPostCode(double long, double lat) async {
+  List<double> distance = [];
+  List<String> postcode = [];
+  List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
+  //get first entry in the list of placemarkers
+  Placemark place = placemarks[0];
+  var postCodesResponse = await http.get(Uri.parse(
+      'https://data.opendatasoft.com/api/records/1.0/search/?dataset=geonames-postal-code%40public&q=${place.isoCountryCode}&rows=139&facet=country_code&facet=admin_name1&facet=admin_code1&facet=admin_name2'));
+  final postCodesJson = jsonDecode(postCodesResponse.body.toString());
+  for (var i in postCodesJson['records']) {
+    distance.add(await Geolocator.distanceBetween(lat, long,
+        i["fields"]["latitude"] as double, i["fields"]["longitude"] as double));
+    postcode.add(i["fields"]["postal_code"].toString());
+  }
+  var shortDistance = distance.reduce(min);
+  var index = distance.indexOf(shortDistance);
 
-
+  return postcode.elementAt(index);
+}

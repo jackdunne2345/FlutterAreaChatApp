@@ -1,4 +1,7 @@
+import 'package:area_app/main.dart';
+import 'package:area_app/pages/profile_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,14 +22,23 @@ class _HomePageState extends State<HomePage> {
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: Text("Why don't you start the conversation?"),
             );
           }
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
-            itemBuilder: (ctx, index) => Container(
-              child: PostWidget(
-                snap: snapshot.data!.docs[index].data(),
+            itemBuilder: (ctx, index) => GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    //i have to make it impossible for someone to accses this function if they dont have the corret creditials
+                    builder: (context) => ProfilePage(
+                          uid: snapshot.data!.docs[index].data()['uid'],
+                        )));
+              },
+              child: Container(
+                child: PostWidget(
+                  snap: snapshot.data!.docs[index].data(),
+                ),
               ),
             ),
           );
@@ -38,6 +50,7 @@ class _HomePageState extends State<HomePage> {
 
 class PostWidget extends StatefulWidget {
   final snap;
+
   const PostWidget({
     Key? key,
     required this.snap,
@@ -67,7 +80,7 @@ class _PostWidgetState extends State<PostWidget> {
                 style: const TextStyle(color: Colors.black),
                 children: [
                   TextSpan(
-                    text: widget.snap['uid'].toString(),
+                    text: widget.snap['email'].toString() + ": ",
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),

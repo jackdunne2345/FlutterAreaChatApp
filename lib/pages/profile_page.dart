@@ -7,17 +7,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '/firebase.dart';
 
 class ProfilePage extends StatefulWidget {
-  User user;
-  ProfilePage({Key? key, required this.user}) : super(key: key);
+  String uid;
+  ProfilePage({Key? key, required this.uid}) : super(key: key);
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState(user);
+  State<ProfilePage> createState() => _ProfilePageState(uid);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  User user;
+  String uid;
 
-  _ProfilePageState(this.user);
+  _ProfilePageState(this.uid);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,26 +43,18 @@ class _ProfilePageState extends State<ProfilePage> {
             Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(10),
-                //stream builder builds itself based on snapshot fed inito it as it updates
+                //future builder builds itself based on snapshot fed inito it as it updates
                 child: FutureBuilder<DocumentSnapshot>(
-                  future: userData.doc(user.uid).get(),
+                  future: userData.doc(uid).get(),
                   builder: (BuildContext context,
                       AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text("Something went wrong");
-                    }
-
-                    if (snapshot.hasData && !snapshot.data!.exists) {
-                      return Text("Document does not exist");
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
                       Map<String, dynamic> data =
                           snapshot.data!.data() as Map<String, dynamic>;
                       return Text("${data['bio']}");
                     }
 
-                    return Text("loading");
+                    return Text("Loading....");
                   },
                 )),
             Container(
@@ -77,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.of(context).push(MaterialPageRoute(
                           //i have to make it impossible for someone to accses this function if they dont have the corret creditials
                           builder: (context) => EditProfile(
-                                user: user,
+                                uid: uid,
                               )));
                     },
                     child: Text('Edit Profile')))
@@ -89,17 +81,17 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class EditProfile extends StatefulWidget {
-  User user;
-  EditProfile({Key? key, required this.user}) : super(key: key);
+  String uid;
+  EditProfile({Key? key, required this.uid}) : super(key: key);
 
   @override
-  State<EditProfile> createState() => _EditProfileState(user);
+  State<EditProfile> createState() => _EditProfileState(uid);
 }
 
 class _EditProfileState extends State<EditProfile> {
-  User user;
+  String uid;
   String currentBio = "";
-  _EditProfileState(this.user);
+  _EditProfileState(this.uid);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -126,11 +118,8 @@ class _EditProfileState extends State<EditProfile> {
                           MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     onPressed: () {
-                      giveUserData(currentBio, user.uid);
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ProfilePage(
-                                user: user,
-                              )));
+                      giveUserData(currentBio, uid);
+                      Navigator.pop(context);
                     },
                     child: Text('Save Profile')))
           ],
