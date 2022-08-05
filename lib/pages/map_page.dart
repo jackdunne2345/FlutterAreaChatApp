@@ -1,29 +1,36 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:area_app/main.dart';
+import 'package:area_app/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
 
 class MapPage extends StatefulWidget {
+  double longitude;
+  double latitude;
+  MapPage({Key? key, required this.longitude, required this.latitude})
+      : super(key: key);
   @override
-  _MapPageState createState() => _MapPageState();
+  _MapPageState createState() => _MapPageState(longitude, latitude);
 }
 
-double? cLat = 53.390;
-double? cLong = -6.293;
+double? cLat = latitude;
+double? cLong = longitude;
 String code = "";
 Set<Marker> list = {};
 BitmapDescriptor? mapMarkImg;
 
 class _MapPageState extends State<MapPage> {
+  double longitude;
+  double latitude;
+  _MapPageState(this.longitude, this.latitude);
   Completer<GoogleMapController> _controller = Completer();
 
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(53.3346, -6.2733),
+    target: LatLng(cLat!, cLong!),
     zoom: 15.4746,
   );
 
@@ -31,7 +38,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       //waits for stream to have data in it befor building the widget
-      future: getCountry(cLong, cLat),
+      future: getCountry(longitude, latitude),
       builder: (context, snapshot) {
         return Scaffold(body: getBody(list));
 
@@ -64,6 +71,7 @@ class _MapPageState extends State<MapPage> {
 //get country code
 Future getCountry(double? long, double? lat) async {
   double lat1;
+
   double long1;
   lat1 = lat!;
   long1 = long!;
@@ -86,7 +94,10 @@ Future getCountry(double? long, double? lat) async {
           markerId: MarkerId(i["fields"]["postal_code"].toString()),
           position: LatLng(i["fields"]["latitude"] as double,
               i["fields"]["longitude"] as double),
-          icon: mapMarkImg!);
+          icon: mapMarkImg!,
+          onTap: () {
+            Get.to(HomePage(pCode: i["fields"]["postal_code"].toString()));
+          });
 
       list.add(marker);
       print(list.length);

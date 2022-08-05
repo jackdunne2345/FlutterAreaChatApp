@@ -5,20 +5,17 @@ import '../main.dart';
 import '/firebase.dart';
 
 class PostPage extends StatefulWidget {
-  double longitude;
-  double latitude;
-  PostPage({Key? key, required this.longitude, required this.latitude})
-      : super(key: key);
+  String pCode;
+  PostPage({Key? key, required this.pCode}) : super(key: key);
 
   @override
-  State<PostPage> createState() => _PostPageState(longitude, latitude);
+  State<PostPage> createState() => _PostPageState(pCode);
 }
 
 class _PostPageState extends State<PostPage> {
-  double longitude;
-  double latitude;
+  String pCode;
   String postGive = "";
-  _PostPageState(this.longitude, this.latitude);
+  _PostPageState(this.pCode);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -51,8 +48,9 @@ class _PostPageState extends State<PostPage> {
                           auth.currentUser!.uid,
                           longitude.toString(),
                           latitude.toString(),
-                          await getPostCode(longitude, latitude),
-                          auth.currentUser!.email);
+                          pCode,
+                          auth.currentUser!.email,
+                          DateTime.now());
                       Navigator.pop(context);
                     },
                     child: Text('Post'))),

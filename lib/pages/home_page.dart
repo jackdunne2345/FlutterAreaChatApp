@@ -1,23 +1,31 @@
-import 'package:area_app/main.dart';
 import 'package:area_app/pages/profile_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
+
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  String? pCode;
+
+  HomePage({Key? key, required this.pCode}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState(pCode);
 }
 
 class _HomePageState extends State<HomePage> {
+  String? pCode;
+
+  _HomePageState(this.pCode);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('posts').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('posts')
+            .where('post_code', isEqualTo: pCode)
+            .where("date_time", isGreaterThanOrEqualTo: Timestamp.now())
+            .snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

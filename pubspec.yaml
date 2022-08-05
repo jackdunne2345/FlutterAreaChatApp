@@ -27,6 +27,7 @@ dependencies:
   geolocator: ^9.0.1
   geocoding: ^2.0.4
   http: ^0.13.4
+  get: ^4.6.5
 
 
 dev_dependencies:

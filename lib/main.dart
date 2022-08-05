@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:convert';
+import 'dart:math';
+import 'package:http/http.dart' as http;
 import 'package:area_app/pages/home_page.dart';
 import 'package:area_app/pages/map_page.dart';
 import 'package:area_app/pages/post_page.dart';
@@ -15,11 +18,16 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/firebase.dart';
 
+String? pCode;
+var longitude = 0.0;
+var latitude = 0.0;
+var countryCode = "";
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await _updatePosition();
   //runApp is a flutter function that inflates
   //the flutter built ui to the screen
   //this funciton takes a "widget" as an argument
@@ -52,11 +60,6 @@ class HomeView extends StatefulWidget {
 FirebaseAuth auth = FirebaseAuth.instance;
 
 class _HomeViewState extends State<HomeView> {
-  var longitude = "";
-  var latitude = "";
-  var countryCode = "";
-//current postion
-
 //current user
   User? user = auth.currentUser;
 
@@ -66,96 +69,99 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     _updatePosition();
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          // this is the app bar and will render above the body wich contains the page view
-          backgroundColor: Colors.blue,
-          elevation: 0,
-          title: const Text(
-            "Area App",
-            style: TextStyle(color: Colors.white),
-          ),
-          actions: [
-            // ignore: prefer_const_constructors
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PostPage(
-                            latitude: 53.3346,
-                            longitude: -6.2733,
-                          )));
-                },
-                icon: Icon(Icons.add_box_outlined)),
-            // ignore: prefer_const_constructors
-          ],
-        ),
-        body: PageView(
-            pageSnapping: true,
-            //page view allows widgets to be rendered in the scaffold
-            controller: pageController,
-            children: [
-              //these are the pages within the page view byu default it scrolls horizzontly
-              MapPage(),
-              const HomePage(),
-              ProfilePage(
-                uid: auth.currentUser!.uid,
-              )
-            ]),
-      ),
-    );
-  }
 
-  Future<void> _updatePosition() async {
-    Position position = await _determinePosition();
-    List pm =
-        await placemarkFromCoordinates(position.latitude, position.latitude);
-    setState(() {
-      longitude = position.latitude.toString();
-      latitude = position.latitude.toString();
-    });
-  }
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
+    return FutureBuilder(
+        future: getPostCode(longitude, latitude),
+        builder: (context, snapshot) {
+          return Scaffold(
+            appBar: AppBar(
+              // this is the app bar and will render above the body wich contains the page view
+              backgroundColor: Colors.blue,
+              elevation: 0,
+              title: const Text(
+                "Area App",
+                style: TextStyle(color: Colors.white),
+              ),
+              actions: [
+                // ignore: prefer_const_constructors
+                IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => PostPage(
+                                pCode: pCode!,
+                              )));
+                    },
+                    icon: Icon(Icons.add_box_outlined)),
+                // ignore: prefer_const_constructors
+              ],
+            ),
+            body: PageView(
+                pageSnapping: true,
+                //page view allows widgets to be rendered in the scaffold
+                controller: pageController,
+                children: [
+                  //these are the pages within the page view byu default it scrolls horizzontly
+                  MapPage(
+                    longitude: longitude,
+                    latitude: latitude,
+                  ),
+                  HomePage(pCode: pCode),
+                  ProfilePage(
+                    uid: auth.currentUser!.uid,
+                  )
+                ]),
+          );
+        });
   }
 }
 
+Future<void> _updatePosition() async {
+  Position position = await _determinePosition();
+  List pm =
+      await placemarkFromCoordinates(position.latitude, position.latitude);
+
+  longitude = position.latitude;
+  latitude = position.latitude;
+}
+
+Future<Position> _determinePosition() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  // Test if location services are enabled.
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are not enabled don't continue
+    // accessing the position and request users of the
+    // App to enable the location services.
+    return Future.error('Location services are disabled.');
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      // Permissions are denied, next time you could try
+      // requesting permissions again (this is also where
+      // Android's shouldShowRequestPermissionRationale
+      // returned true. According to Android guidelines
+      // your App should show an explanatory UI now.
+      return Future.error('Location permissions are denied');
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    // Permissions are denied forever, handle appropriately.
+    return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.');
+  }
+
+  // When we reach here, permissions are granted and we can
+  // continue accessing the position of the device.
+  return await Geolocator.getCurrentPosition();
+}
 //login screen widget
-// constent ussers atm
+// constent ussers atmF
 
 class LoginScreen extends StatelessWidget {
   Future<String?> _authUser(LoginData data) {
@@ -193,4 +199,25 @@ class LoginScreen extends StatelessWidget {
       onRecoverPassword: _recoverPassword,
     );
   }
+}
+
+//get post code
+// i calcualte what post code marker youa re clsoest to using geolocator package
+Future<void> getPostCode(double long, double lat) async {
+  List<double> distance = [];
+  List<String> postcode = [];
+  List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
+  //get first entry in the list of placemarkers
+  Placemark place = placemarks[0];
+  var postCodesResponse = await http.get(Uri.parse(
+      'https://data.opendatasoft.com/api/records/1.0/search/?dataset=geonames-postal-code%40public&q=${place.isoCountryCode}&rows=139&facet=country_code&facet=admin_name1&facet=admin_code1&facet=admin_name2'));
+  final postCodesJson = jsonDecode(postCodesResponse.body.toString());
+  for (var i in postCodesJson['records']) {
+    distance.add(await Geolocator.distanceBetween(lat, long,
+        i["fields"]["latitude"] as double, i["fields"]["longitude"] as double));
+    postcode.add(i["fields"]["postal_code"].toString());
+  }
+  var shortDistance = distance.reduce(min);
+  var index = distance.indexOf(shortDistance);
+  pCode = postcode.elementAt(index);
 }
