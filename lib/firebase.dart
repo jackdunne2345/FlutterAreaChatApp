@@ -1,8 +1,9 @@
+import 'package:area_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Duration get loginTime => Duration(milliseconds: 2250);
-Future<String?> logIn(String name, String password) async {
+Future<String?> LogIn(String name, String password) async {
   try {
     await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: name, password: password);
@@ -16,7 +17,7 @@ Future<String?> logIn(String name, String password) async {
   }
 }
 
-Future<String?> signUp(String name, String password) async {
+Future<String?> SignUp(String name, String password) async {
   try {
     UserCredential create = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: name, password: password);
@@ -25,6 +26,22 @@ Future<String?> signUp(String name, String password) async {
     String defBio = "Hi! I'm new :)";
     giveUserData(defBio, user.uid);
 
+    return Future.delayed(loginTime).then((_) async {
+      //this null retunr means there is no errors and will laucnh app
+      return null;
+    });
+  } on FirebaseAuthException catch (e) {
+    return Future.delayed(loginTime).then((_) async {
+      //this return means there is an error and th error will display
+      return e.message;
+    });
+  }
+}
+
+//password reset using firebase
+Future<String?> ForgotPassword(String name) async {
+  try {
+    auth.sendPasswordResetEmail(email: name);
     return Future.delayed(loginTime).then((_) async {
       //this null retunr means there is no errors and will laucnh app
       return null;

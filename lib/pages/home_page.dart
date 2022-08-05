@@ -27,9 +27,10 @@ class _HomePageState extends State<HomePage> {
             .snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.hasData == false) {
+          if (snapshot.data!.docs.isEmpty) {
             return const Center(
-              child: Text("Why don't you start the conversation?"),
+              child:
+                  Text("Nobody talking? Why don't you start the conversation?"),
             );
           }
           return ListView.builder(

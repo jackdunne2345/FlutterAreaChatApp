@@ -169,22 +169,17 @@ Future<Position> _determinePosition() async {
 class LoginScreen extends StatelessWidget {
   Future<String?> _authUser(LoginData data) {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
-    return logIn(data.name, data.password);
+    return LogIn(data.name, data.password);
   }
 
   Future<String?> _signupUser(SignupData data) {
     debugPrint('Signup Email: ${data.name}, Password: ${data.password}');
-    return signUp(data.name!, data.password!);
+    return SignUp(data.name!, data.password!);
   }
 
-  Future<String> _recoverPassword(String name) {
+  Future<String?> _recoverPassword(String name) {
     debugPrint('Name: $name');
-    return Future.delayed(loginTime).then((_) {
-      //  if (!users.containsKey(name)) {
-      // return 'User not exists';
-      // }
-      return "hi";
-    });
+    return ForgotPassword(name);
   }
 
   @override
