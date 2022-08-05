@@ -1,9 +1,10 @@
 // ignore_for_file: unnecessary_new, prefer_const_constructors
 
+import 'package:area_app/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import '/firebase.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -60,19 +61,21 @@ class _ProfilePageState extends State<ProfilePage> {
             Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(10),
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          //i have to make it impossible for someone to accses this function if they dont have the corret creditials
-                          builder: (context) => EditProfile(
-                                uid: uid,
-                              )));
-                    },
-                    child: Text('Edit Profile')))
+                child: Visibility(
+                    visible: auth.currentUser!.uid == uid,
+                    child: ElevatedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              //i have to make it impossible for someone to accses this function if they dont have the corret creditials
+                              builder: (context) => EditProfile(
+                                    uid: uid,
+                                  )));
+                        },
+                        child: Text('Edit Profile'))))
           ],
         ),
       ),

@@ -108,6 +108,11 @@ Future getCountry(double long, double lat, BuildContext context) async {
                 ),
               ),
             );
+            // Get.to(
+            //   HomePage(
+            //     pCode: i["fields"]["postal_code"].toString(),
+            //   ),
+            // );
           },
         ),
       );

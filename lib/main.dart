@@ -102,11 +102,12 @@ class _HomeViewState extends State<HomeView> {
                 // ignore: prefer_const_constructors
               ],
             ),
-            body: PageView(
-                pageSnapping: true,
-                //page view allows widgets to be rendered in the scaffold
-                controller: pageController,
-                children: [
+            body: //HomePage(pCode: pCode)
+                PageView(
+                    pageSnapping: true,
+                    //page view allows widgets to be rendered in the scaffold
+                    controller: pageController,
+                    children: [
                   //these are the pages within the page view byu default it scrolls horizzontly
                   ProfilePage(
                     uid: auth.currentUser!.uid,

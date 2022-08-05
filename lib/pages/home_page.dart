@@ -1,5 +1,6 @@
 import 'package:area_app/pages/profile_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String pCode;
-
+  Timestamp timeNow = Timestamp.now();
   _HomePageState(this.pCode);
   @override
   Widget build(BuildContext context) {
@@ -24,13 +25,14 @@ class _HomePageState extends State<HomePage> {
         stream: FirebaseFirestore.instance
             .collection('posts')
             .where('post_code', isEqualTo: pCode)
+            .where('date_time', isGreaterThan: timeNow)
+            .orderBy('date_time', descending: true)
             .snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.data!.docs.isEmpty) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child:
-                  Text("Nobody talking? Why don't you start the conversation?"),
+              child: CircularProgressIndicator(),
             );
           }
           return ListView.builder(
@@ -79,6 +81,7 @@ class _PostWidgetState extends State<PostWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
+            color: Colors.grey[200],
             width: double.infinity,
             padding: const EdgeInsets.only(
               top: 8,
@@ -88,18 +91,25 @@ class _PostWidgetState extends State<PostWidget> {
                 style: const TextStyle(color: Colors.black),
                 children: [
                   TextSpan(
-                    text: widget.snap['email'].toString() + ": ",
+                    text:
+                        "${widget.snap['email']}: ${DateFormat.Hms().format(widget.snap['date_time'].toDate())}: ",
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   TextSpan(
                     text: ' ${widget.snap['post_text']}',
-                  ),
+                  )
                 ],
               ),
             ),
           ),
+          Divider(
+              height: 10,
+              thickness: 2,
+              indent: 20,
+              endIndent: 10,
+              color: Colors.blue[100])
         ],
       ),
     );

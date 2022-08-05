@@ -20,11 +20,11 @@ class _PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Column(
+        body: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              margin: const EdgeInsets.all(10),
-              padding: const EdgeInsets.all(10),
+            SizedBox(
+              width: 250,
               child: TextField(
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -34,9 +34,12 @@ class _PostPageState extends State<PostPage> {
                 }),
               ),
             ),
-            Container(
-                margin: const EdgeInsets.all(10),
-                padding: const EdgeInsets.all(10),
+            VerticalDivider(
+              thickness: 10,
+              color: Colors.white,
+            ),
+            SizedBox(
+                height: 60,
                 child: ElevatedButton(
                     style: ButtonStyle(
                       foregroundColor:
