@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  String? pCode;
+  String pCode;
 
   HomePage({Key? key, required this.pCode}) : super(key: key);
 
@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String? pCode;
+  String pCode;
 
   _HomePageState(this.pCode);
   @override
@@ -24,11 +24,10 @@ class _HomePageState extends State<HomePage> {
         stream: FirebaseFirestore.instance
             .collection('posts')
             .where('post_code', isEqualTo: pCode)
-            .where("date_time", isGreaterThanOrEqualTo: Timestamp.now())
             .snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.hasData == false) {
             return const Center(
               child: Text("Why don't you start the conversation?"),
             );

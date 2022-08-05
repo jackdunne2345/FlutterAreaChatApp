@@ -18,7 +18,7 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/firebase.dart';
 
-String? pCode;
+String pCode = "world";
 var longitude = 0.0;
 var latitude = 0.0;
 var countryCode = "";
@@ -68,8 +68,6 @@ class _HomeViewState extends State<HomeView> {
   get onPressed => null;
   @override
   Widget build(BuildContext context) {
-    _updatePosition();
-
     return FutureBuilder(
         future: getPostCode(longitude, latitude),
         builder: (context, snapshot) {
@@ -88,10 +86,19 @@ class _HomeViewState extends State<HomeView> {
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => PostPage(
-                                pCode: pCode!,
+                                pCode: pCode,
                               )));
                     },
                     icon: Icon(Icons.add_box_outlined)),
+                IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => MapPage(
+                                longitude: longitude,
+                                latitude: latitude,
+                              )));
+                    },
+                    icon: Icon(Icons.map_outlined))
                 // ignore: prefer_const_constructors
               ],
             ),
@@ -101,14 +108,10 @@ class _HomeViewState extends State<HomeView> {
                 controller: pageController,
                 children: [
                   //these are the pages within the page view byu default it scrolls horizzontly
-                  MapPage(
-                    longitude: longitude,
-                    latitude: latitude,
-                  ),
-                  HomePage(pCode: pCode),
                   ProfilePage(
                     uid: auth.currentUser!.uid,
-                  )
+                  ),
+                  HomePage(pCode: pCode)
                 ]),
           );
         });
@@ -120,7 +123,7 @@ Future<void> _updatePosition() async {
   List pm =
       await placemarkFromCoordinates(position.latitude, position.latitude);
 
-  longitude = position.latitude;
+  longitude = position.longitude;
   latitude = position.latitude;
 }
 
@@ -206,6 +209,7 @@ class LoginScreen extends StatelessWidget {
 Future<void> getPostCode(double long, double lat) async {
   List<double> distance = [];
   List<String> postcode = [];
+  await _updatePosition();
   List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
   //get first entry in the list of placemarkers
   Placemark place = placemarks[0];

@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'home_page.dart';
 
 class MapPage extends StatefulWidget {
   double longitude;
@@ -17,8 +18,8 @@ class MapPage extends StatefulWidget {
   _MapPageState createState() => _MapPageState(longitude, latitude);
 }
 
-double? cLat = latitude;
-double? cLong = longitude;
+double cLat = latitude;
+double cLong = longitude;
 String code = "";
 Set<Marker> list = {};
 BitmapDescriptor? mapMarkImg;
@@ -30,7 +31,7 @@ class _MapPageState extends State<MapPage> {
   Completer<GoogleMapController> _controller = Completer();
 
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(cLat!, cLong!),
+    target: LatLng(cLat, cLong),
     zoom: 15.4746,
   );
 
@@ -38,7 +39,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       //waits for stream to have data in it befor building the widget
-      future: getCountry(longitude, latitude),
+      future: getCountry(cLong, cLat, context),
       builder: (context, snapshot) {
         return Scaffold(body: getBody(list));
 
@@ -61,6 +62,7 @@ class _MapPageState extends State<MapPage> {
       buildingsEnabled: false,
       myLocationButtonEnabled: false,
       initialCameraPosition: _kGooglePlex,
+      myLocationEnabled: true,
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
@@ -69,19 +71,19 @@ class _MapPageState extends State<MapPage> {
 }
 
 //get country code
-Future getCountry(double? long, double? lat) async {
+Future getCountry(double long, double lat, BuildContext context) async {
   double lat1;
 
   double long1;
-  lat1 = lat!;
-  long1 = long!;
+  lat1 = lat;
+  long1 = long;
   mapMarkImg = await BitmapDescriptor.fromAssetImage(
       ImageConfiguration(), 'assets/images/marker.png');
   //code taken from geocoding pub dev page
   List<Placemark> placemarks = await placemarkFromCoordinates(lat1, long1);
   //get first entry in the list of placemarkers
   Placemark place = placemarks[0];
-  if (code != place.isoCountryCode!) {
+  if (code != place.isoCountryCode) {
     code = place.isoCountryCode!;
     //get response
     var postCodesResponse = await http.get(Uri.parse(
@@ -91,13 +93,24 @@ Future getCountry(double? long, double? lat) async {
     //print(postCodesJson["records"][0]["datasetid"]);
     for (var i in postCodesJson['records']) {
       Marker marker = Marker(
-          markerId: MarkerId(i["fields"]["postal_code"].toString()),
-          position: LatLng(i["fields"]["latitude"] as double,
-              i["fields"]["longitude"] as double),
-          icon: mapMarkImg!,
+        markerId: MarkerId(i["fields"]["postal_code"].toString()),
+        position: LatLng(i["fields"]["latitude"] as double,
+            i["fields"]["longitude"] as double),
+        icon: mapMarkImg!,
+        infoWindow: InfoWindow(
+          title: i["fields"]["postal_code"].toString(),
           onTap: () {
-            Get.to(HomePage(pCode: i["fields"]["postal_code"].toString()));
-          });
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => HomePage(
+                  pCode: i["fields"]["postal_code"].toString(),
+                ),
+              ),
+            );
+          },
+        ),
+      );
 
       list.add(marker);
       print(list.length);
