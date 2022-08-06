@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:area_app/pages/home_page.dart';
 import 'package:area_app/pages/map_page.dart';
-import 'package:area_app/pages/post_page.dart';
+
 import 'package:area_app/pages/profile_page.dart';
 import 'package:flutter/material.dart'; // this imports widgets
 import 'package:flutter_login/flutter_login.dart'; //login package
@@ -18,7 +18,20 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/firebase.dart';
 
-String pCode = "world";
+class pCodeObject {
+  String pCode = "";
+
+  String get getPcode {
+    return pCode;
+  }
+
+  void set setPcode(String pCode) {
+    this.pCode = pCode;
+  }
+}
+
+pCodeObject pCodeObj = new pCodeObject();
+
 var longitude = 0.0;
 var latitude = 0.0;
 var countryCode = "";
@@ -82,14 +95,7 @@ class _HomeViewState extends State<HomeView> {
               ),
               actions: [
                 // ignore: prefer_const_constructors
-                IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => PostPage(
-                                pCode: pCode,
-                              )));
-                    },
-                    icon: Icon(Icons.add_box_outlined)),
+
                 IconButton(
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
@@ -112,7 +118,7 @@ class _HomeViewState extends State<HomeView> {
                   ProfilePage(
                     uid: auth.currentUser!.uid,
                   ),
-                  HomePage(pCode: pCode)
+                  HomePage(pCode: pCodeObj.getPcode)
                 ]),
           );
         });
@@ -219,5 +225,5 @@ Future<void> getPostCode(double long, double lat) async {
   }
   var shortDistance = distance.reduce(min);
   var index = distance.indexOf(shortDistance);
-  pCode = postcode.elementAt(index);
+  pCodeObj.setPcode = postcode.elementAt(index);
 }

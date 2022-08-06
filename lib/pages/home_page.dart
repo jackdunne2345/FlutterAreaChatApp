@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 
+import '../main.dart';
+import '/firebase.dart';
+
 class HomePage extends StatefulWidget {
   String pCode;
 
@@ -13,48 +16,101 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState(pCode);
 }
 
+String pcodeCheck = pCodeObj.getPcode;
+String p = "D12";
+
 class _HomePageState extends State<HomePage> {
   String pCode;
+  String postGive = "";
   Timestamp timeNow = Timestamp.now();
   _HomePageState(this.pCode);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('posts')
-            .where('post_code', isEqualTo: pCode)
-            .where('date_time', isGreaterThan: timeNow)
-            .orderBy('date_time', descending: true)
-            .snapshots(),
-        builder: (context,
-            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
+      home: Scaffold(
+        //body: Text(pCode + "  " + pCodeObj.getPcode),
+        resizeToAvoidBottomInset: false,
+        body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('posts')
+              .where('post_code', isEqualTo: pCode)
+              .where('date_time', isGreaterThan: timeNow)
+              .orderBy('date_time', descending: true)
+              .snapshots(),
+          builder: (context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return Container(
+              height: 525,
+              child: Expanded(
+                  child: ListView.builder(
+                reverse: true,
+                shrinkWrap: true,
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (ctx, index) => GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        //i have to make it impossible for someone to accses this function if they dont have the corret creditials
+                        builder: (context) => ProfilePage(
+                              uid: snapshot.data!.docs[index].data()['uid'],
+                            )));
+                  },
+                  child: Container(
+                    child: PostWidget(
+                      snap: snapshot.data!.docs[index].data(),
+                    ),
+                  ),
+                ),
+              )),
             );
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (ctx, index) => GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    //i have to make it impossible for someone to accses this function if they dont have the corret creditials
-                    builder: (context) => ProfilePage(
-                          uid: snapshot.data!.docs[index].data()['uid'],
-                        )));
-              },
-              child: Container(
-                child: PostWidget(
-                  snap: snapshot.data!.docs[index].data(),
+          },
+        ),
+        bottomSheet: Visibility(
+          visible: pCodeObj.getPcode == pCode,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 315,
+                height: 60,
+                child: TextField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "What you wanna tell every one?"),
+                  onChanged: (text) => setState(() {
+                    postGive = text;
+                  }),
                 ),
               ),
-            ),
-          );
-        },
+              SizedBox(
+                height: 60,
+                child: ElevatedButton(
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    onPressed: () async {
+                      givePostData(
+                          postGive,
+                          auth.currentUser!.uid,
+                          longitude.toString(),
+                          latitude.toString(),
+                          pCode,
+                          auth.currentUser!.email,
+                          DateTime.now());
+                    },
+                    child: Text('Post')),
+              ),
+            ],
+          ),
+        ),
       ),
-    ));
+    );
   }
 }
 
