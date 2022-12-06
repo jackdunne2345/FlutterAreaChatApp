@@ -12,11 +12,13 @@ import 'package:flutter_login/flutter_login.dart'; //login package
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 //firebase imports
-import 'firebase.dart';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '/firebase.dart';
+//icon pacages
+import 'package:fluttericon/brandico_icons.dart';
 
 class pCodeObject {
   String pCode = "";
@@ -35,6 +37,7 @@ pCodeObject pCodeObj = new pCodeObject();
 var longitude = 0.0;
 var latitude = 0.0;
 var countryCode = "";
+String pcode = "";
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -59,25 +62,26 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: LoginScreen());
+    return MaterialApp(home: AuthWithGoogle().handleAuthState());
   }
 }
 
 class HomeView extends StatefulWidget {
-  const HomeView({Key? key}) : super(key: key);
+  User? Signed_In_User;
 
+  HomeView({Key? key, required this.Signed_In_User}) : super(key: key);
   @override
-  State<HomeView> createState() => _HomeViewState();
+  State<HomeView> createState() => _HomeViewState(Signed_In_User);
 }
-
-FirebaseAuth auth = FirebaseAuth.instance;
 
 class _HomeViewState extends State<HomeView> {
 //current user
-  User? user = auth.currentUser;
+  User? Signed_In_User;
+  _HomeViewState(this.Signed_In_User);
 
   //this line under createsa a page controller that i call in the pageview to set the intial page to the page in position one in the array
   PageController pageController = PageController(initialPage: 1);
+
   get onPressed => null;
   @override
   Widget build(BuildContext context) {
@@ -86,39 +90,41 @@ class _HomeViewState extends State<HomeView> {
         builder: (context, snapshot) {
           return Scaffold(
             appBar: AppBar(
-              // this is the app bar and will render above the body wich contains the page view
-              backgroundColor: Colors.blue,
-              elevation: 0,
-              title: const Text(
-                "Area App",
-                style: TextStyle(color: Colors.white),
-              ),
-              actions: [
-                // ignore: prefer_const_constructors
-
-                IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => MapPage(
-                                longitude: longitude,
-                                latitude: latitude,
-                              )));
-                    },
-                    icon: Icon(Icons.map_outlined))
-                // ignore: prefer_const_constructors
-              ],
-            ),
+                // this is the app bar and will render above the body wich contains the page view
+                backgroundColor: Colors.blue,
+                elevation: 0,
+                title: const Text(
+                  "Area App",
+                  style: TextStyle(color: Colors.white),
+                ),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => MapPage(
+                                  longitude: longitude,
+                                  latitude: latitude,
+                                )));
+                      },
+                      icon: Icon(Icons.map_outlined)),
+                  IconButton(
+                      onPressed: () {
+                        AuthWithGoogle().signOut();
+                      },
+                      icon: Text("log out"))
+                  // ignore: prefer_const_constructors
+                ]),
             body: //HomePage(pCode: pCode)
                 PageView(
                     pageSnapping: true,
-                    //page view allows widgets to be rendered in the scaffold
+                    //page view allows widgets to be rendered in this widgets scaffold in a scrollable view
                     controller: pageController,
                     children: [
                   //these are the pages within the page view byu default it scrolls horizzontly
                   ProfilePage(
-                    uid: auth.currentUser!.uid,
+                    uid: Signed_In_User!.uid,
                   ),
-                  HomePage(pCode: pCodeObj.getPcode)
+                  HomePage(pCode: pcode)
                 ]),
           );
         });
@@ -176,17 +182,17 @@ Future<Position> _determinePosition() async {
 class LoginScreen extends StatelessWidget {
   Future<String?> _authUser(LoginData data) {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
-    return LogIn(data.name, data.password);
+    return AuthWithGoogle().logInEmail(data.name, data.password);
   }
 
   Future<String?> _signupUser(SignupData data) {
     debugPrint('Signup Email: ${data.name}, Password: ${data.password}');
-    return SignUp(data.name!, data.password!);
+    return AuthWithGoogle().signUpEmail(data.name!, data.password!);
   }
 
   Future<String?> _recoverPassword(String name) {
     debugPrint('Name: $name');
-    return ForgotPassword(name);
+    return AuthWithGoogle().forgotPassword(name);
   }
 
   @override
@@ -194,12 +200,21 @@ class LoginScreen extends StatelessWidget {
     return FlutterLogin(
       title: 'Area App',
       logo: AssetImage('assets/images/logo.png'),
+      additionalSignupFields: [
+        const UserFormField(keyName: "User Name", displayName: "Screen Name")
+      ],
       onLogin: _authUser,
       onSignup: _signupUser,
+      loginProviders: <LoginProvider>[
+        LoginProvider(
+            icon: Icons.headphones,
+            label: 'Google',
+            callback: () async {
+              await AuthWithGoogle().signIn();
+            })
+      ],
       onSubmitAnimationCompleted: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const HomeView(),
-        ));
+        return null;
       },
       onRecoverPassword: _recoverPassword,
     );
@@ -226,4 +241,5 @@ Future<void> getPostCode(double long, double lat) async {
   var shortDistance = distance.reduce(min);
   var index = distance.indexOf(shortDistance);
   pCodeObj.setPcode = postcode.elementAt(index);
+  pcode = postcode.elementAt(index);
 }

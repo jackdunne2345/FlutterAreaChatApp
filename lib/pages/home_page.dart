@@ -1,7 +1,6 @@
-import 'package:area_app/pages/profile_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-
+import 'profile_page.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
@@ -16,9 +15,6 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState(pCode);
 }
 
-String pcodeCheck = pCodeObj.getPcode;
-String p = "D12";
-
 class _HomePageState extends State<HomePage> {
   String pCode;
   String postGive = "";
@@ -29,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        //body: Text(pCode + "  " + pCodeObj.getPcode),
+        //body: Text(pCode + "1  hi  2" + pCodeObj.getPcode),
         resizeToAvoidBottomInset: false,
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
@@ -97,11 +93,11 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () async {
                       givePostData(
                           postGive,
-                          auth.currentUser!.uid,
+                          AuthWithGoogle().Auth_Entry_point.currentUser!.uid,
                           longitude.toString(),
                           latitude.toString(),
                           pCode,
-                          auth.currentUser!.email,
+                          AuthWithGoogle().Auth_Entry_point.currentUser!.email,
                           DateTime.now());
                     },
                     child: Text('Post')),

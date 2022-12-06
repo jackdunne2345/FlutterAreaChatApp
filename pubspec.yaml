@@ -28,6 +28,11 @@ dependencies:
   geocoding: ^2.0.4
   http: ^0.13.4
   get: ^4.6.5
+  fluttericon: ^2.0.0
+  google_sign_in: ^5.4.2
+  image_picker: ^0.8.6
+  flutter_profile_picture: ^2.0.0
+  
 
 
 dev_dependencies:
@@ -49,6 +54,7 @@ flutter:
   assets:
      - assets/images/logo.png
      - assets/images/marker.png
+     - assets/images/google.png
 
  
 

@@ -1,58 +1,8 @@
 import 'package:area_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-Duration get loginTime => Duration(milliseconds: 2250);
-Future<String?> LogIn(String name, String password) async {
-  try {
-    await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: name, password: password);
-    return Future.delayed(loginTime).then((_) {
-      return null;
-    });
-  } on FirebaseAuthException catch (e) {
-    return Future.delayed(loginTime).then((_) {
-      return e.message;
-    });
-  }
-}
-
-Future<String?> SignUp(String name, String password) async {
-  try {
-    UserCredential create = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: name, password: password);
-    User user = create.user!;
-    //set user data to default data when account is made
-    String defBio = "Hi! I'm new :)";
-    giveUserData(defBio, user.uid);
-
-    return Future.delayed(loginTime).then((_) async {
-      //this null retunr means there is no errors and will laucnh app
-      return null;
-    });
-  } on FirebaseAuthException catch (e) {
-    return Future.delayed(loginTime).then((_) async {
-      //this return means there is an error and th error will display
-      return e.message;
-    });
-  }
-}
-
-//password reset using firebase
-Future<String?> ForgotPassword(String name) async {
-  try {
-    auth.sendPasswordResetEmail(email: name);
-    return Future.delayed(loginTime).then((_) async {
-      //this null retunr means there is no errors and will laucnh app
-      return null;
-    });
-  } on FirebaseAuthException catch (e) {
-    return Future.delayed(loginTime).then((_) async {
-      //this return means there is an error and th error will display
-      return e.message;
-    });
-  }
-}
+import 'package:flutter/cupertino.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 //this object a userData object referning to the "userCollection" colelction on my firestore
 
@@ -62,12 +12,17 @@ final CollectionReference userData =
 final CollectionReference postData =
     FirebaseFirestore.instance.collection('posts');
 
+//**************************************************************************************************************************************************** */
 Future giveUserData(String bio, String uid) async {
-  return await userData.doc(uid).set({'bio': bio});
-  //  .then((value) => print("Data added"))
-  // .catchError((error) => print("Failed to add data: $error"));
+  return await userData
+      .doc(uid)
+      .set({'bio': bio})
+      .then((value) => print("Data added"))
+      .catchError((error) => print("Failed to add data: $error"));
 }
+//**************************************************************************************************************************************************** */
 
+//**************************************************************************************************************************************************** */
 Future givePostData(String postText, String? uid, String longitude,
     String latitude, String countryCode, String? email, DateTime time) async {
   return await postData.doc().set({
@@ -79,4 +34,118 @@ Future givePostData(String postText, String? uid, String longitude,
     'post_code': countryCode,
     'date_time': time
   });
+}
+//**************************************************************************************************************************************************** */
+
+class AuthWithGoogle {
+  final FirebaseAuth Auth_Entry_point = FirebaseAuth.instance;
+//**************************************************************************************************************************************************** */
+  signOut() {
+    Auth_Entry_point.signOut();
+  }
+//**************************************************************************************************************************************************** */
+
+//**************************************************************************************************************************************************** */
+  Duration get loginTime => Duration(milliseconds: 2250);
+//**************************************************************************************************************************************************** */
+
+//**************************************************************************************************************************************************** */
+  Future<String?> logInEmail(String name, String password) async {
+    try {
+      await Auth_Entry_point.signInWithEmailAndPassword(
+          email: name, password: password);
+      return Future.delayed(loginTime).then((_) {
+        return null;
+      });
+    } on FirebaseAuthException catch (e) {
+      return Future.delayed(loginTime).then((_) {
+        return e.message;
+      });
+    }
+  }
+
+//**************************************************************************************************************************************************** */
+  Future<String?> signUpEmail(String name, String password) async {
+    try {
+      UserCredential create =
+          await Auth_Entry_point.createUserWithEmailAndPassword(
+              email: name, password: password);
+      User user = create.user!;
+      //set user data to default data when account is made
+      String defBio = "Hi! I'm new :)";
+      giveUserData(defBio, user.uid);
+
+      return Future.delayed(loginTime).then((_) async {
+        //this null retunr means there is no errors and will laucnh app
+        return null;
+      });
+    } on FirebaseAuthException catch (e) {
+      return Future.delayed(loginTime).then((_) async {
+        //this return means there is an error and th error will display
+        return e.message;
+      });
+    }
+  }
+
+//**************************************************************************************************************************************************** */
+//password reset using firebase
+  Future<String?> forgotPassword(String name) async {
+    try {
+      Auth_Entry_point.sendPasswordResetEmail(email: name);
+      return Future.delayed(loginTime).then((_) async {
+        //this null retunr means there is no errors and will laucnh app
+        return null;
+      });
+    } on FirebaseAuthException catch (e) {
+      return Future.delayed(loginTime).then((_) async {
+        //this return means there is an error and th error will display
+        return e.message;
+      });
+    }
+  }
+//**************************************************************************************************************************************************** */
+
+//**************************************************************************************************************************************************** */
+  //uses a stream builder to build the applciation scaffold based on weather the snapshot of the stream has data in it
+  // in this case user auth data.
+  handleAuthState() {
+    return StreamBuilder(
+        stream: Auth_Entry_point.authStateChanges(),
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.hasData) {
+            User? SignedInAuthUser = FirebaseAuth.instance.currentUser;
+            return HomeView(Signed_In_User: SignedInAuthUser);
+          } else {
+            return LoginScreen();
+          }
+        });
+  }
+
+  //allows ussers to sign in with google
+  Future<String?> signIn() async {
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser =
+          await GoogleSignIn(scopes: <String>["email"]).signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser!.authentication;
+      giveUserData("hi im new", googleUser.id);
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      return Future.delayed(loginTime).then((_) {
+        return null;
+      });
+    } on FirebaseAuthException catch (e) {
+      return Future.delayed(loginTime).then((_) {
+        return e.message;
+      });
+    }
+  }
 }
