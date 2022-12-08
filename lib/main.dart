@@ -40,14 +40,19 @@ var countryCode = "";
 String pcode = "";
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } on FirebaseException catch (e) {
+    print("ERROR FIRBASE" + e.message!);
+  }
+
   await _updatePosition();
   //runApp is a flutter function that inflates
   //the flutter built ui to the screen
   //this funciton takes a "widget" as an argument
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 // typing 'st' allows you to genreate this statless widget code
@@ -67,17 +72,13 @@ class _MyAppState extends State<MyApp> {
 }
 
 class HomeView extends StatefulWidget {
-  User? Signed_In_User;
-
-  HomeView({Key? key, required this.Signed_In_User}) : super(key: key);
+  const HomeView({Key? key}) : super(key: key);
   @override
-  State<HomeView> createState() => _HomeViewState(Signed_In_User);
+  State<HomeView> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends State<HomeView> {
 //current user
-  User? Signed_In_User;
-  _HomeViewState(this.Signed_In_User);
 
   //this line under createsa a page controller that i call in the pageview to set the intial page to the page in position one in the array
   PageController pageController = PageController(initialPage: 1);
@@ -122,7 +123,7 @@ class _HomeViewState extends State<HomeView> {
                     children: [
                   //these are the pages within the page view byu default it scrolls horizzontly
                   ProfilePage(
-                    uid: Signed_In_User!.uid,
+                    uid: SignedInAuthUser!.uid!,
                   ),
                   HomePage(pCode: pcode)
                 ]),

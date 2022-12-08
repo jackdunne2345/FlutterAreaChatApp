@@ -1,4 +1,5 @@
 // ignore_for_file: unnecessary_new, prefer_const_constructors
+import 'package:area_app/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
@@ -54,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             Container(
-              color: Colors.amber,
+              color: Colors.grey,
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.all(5),
               height: MediaQuery.of(context).size.height * 0.5,
@@ -115,9 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         //i have to make it impossible for someone to accses this function if they dont have the corret creditials
-                        builder: (context) => EditProfile(
-                              uid: uid,
-                            )));
+                        builder: (context) => EditProfile()));
                   },
                   child: Text('Edit Profile'),
                 ),
@@ -131,18 +130,11 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class EditProfile extends StatefulWidget {
-  String uid;
-  EditProfile({Key? key, required this.uid}) : super(key: key);
-
   @override
-  State<EditProfile> createState() => _EditProfileState(uid);
+  State<EditProfile> createState() => _EditProfileState();
 }
 
 class _EditProfileState extends State<EditProfile> {
-  String uid;
-  String currentBio = "";
-  _EditProfileState(this.uid);
-
   TextEditingController textarea = TextEditingController();
 
   @override
@@ -164,98 +156,272 @@ class _EditProfileState extends State<EditProfile> {
                 name: 'Dees',
                 radius: 31,
                 fontsize: 27,
+                img: SignedInAuthUser!.profilePic,
               ),
-              TextButton(onPressed: onPressed(), child: Text("Change Avatar")),
+              TextButton(
+                  onPressed: () {
+                    AuthWithGoogle().uploadImage('ProfilePicture');
+                  },
+                  child: Text("Change Avatar")),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(
+                  width: 120,
+                  height: 225,
+                  alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  color: Colors.amber,
-                  alignment: Alignment.bottomRight,
-                  child: SizedBox(
-                    width: 120,
-                    height: 225,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          left: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          right: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          bottom: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid)),
+                      image: DecorationImage(
+                          image: NetworkImage(SignedInAuthUser!.pic1),
+                          fit: BoxFit.cover)),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue[700],
+                    ),
                     child: IconButton(
-                      alignment: Alignment.bottomRight,
-                      icon: Icon(Icons.add_a_photo),
                       onPressed: () {},
+                      icon: Icon(
+                        Icons.add_a_photo,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
                 Container(
+                  width: 120,
+                  height: 225,
+                  alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  color: Colors.amber,
-                  alignment: Alignment.bottomRight,
-                  child: SizedBox(
-                    width: 120,
-                    height: 225,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          left: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          right: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          bottom: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid)),
+                      image: DecorationImage(
+                          image: NetworkImage(SignedInAuthUser!.pic2),
+                          fit: BoxFit.cover)),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue[700],
+                    ),
                     child: IconButton(
-                      alignment: Alignment.bottomRight,
-                      icon: Icon(Icons.add_a_photo),
                       onPressed: () {},
+                      icon: Icon(
+                        Icons.add_a_photo,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
                 Container(
+                  width: 120,
+                  height: 225,
+                  alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  color: Colors.amber,
-                  alignment: Alignment.bottomRight,
-                  child: SizedBox(
-                    width: 120,
-                    height: 225,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          left: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          right: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          bottom: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid)),
+                      image: DecorationImage(
+                          image: NetworkImage(SignedInAuthUser!.pic3),
+                          fit: BoxFit.cover)),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue[700],
+                    ),
                     child: IconButton(
-                      alignment: Alignment.bottomRight,
-                      icon: Icon(Icons.add_a_photo),
                       onPressed: () {},
+                      icon: Icon(
+                        Icons.add_a_photo,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ]),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(
+                  width: 120,
+                  height: 225,
+                  alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  color: Colors.amber,
-                  alignment: Alignment.bottomRight,
-                  child: SizedBox(
-                    width: 120,
-                    height: 225,
+                  decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                            color: Colors.blueGrey,
+                            width: 2,
+                            style: BorderStyle.solid),
+                        left: BorderSide(
+                            color: Colors.blueGrey,
+                            width: 2,
+                            style: BorderStyle.solid),
+                        right: BorderSide(
+                            color: Colors.blueGrey,
+                            width: 2,
+                            style: BorderStyle.solid),
+                        bottom: BorderSide(
+                            color: Colors.blueGrey,
+                            width: 2,
+                            style: BorderStyle.solid),
+                      ),
+                      image: DecorationImage(
+                          image: NetworkImage(SignedInAuthUser!.pic4),
+                          fit: BoxFit.cover)),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue[700],
+                    ),
                     child: IconButton(
-                      alignment: Alignment.bottomRight,
-                      icon: Icon(Icons.add_a_photo),
                       onPressed: () {},
+                      icon: Icon(
+                        Icons.add_a_photo,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
                 Container(
+                  width: 120,
+                  height: 225,
+                  alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  color: Colors.amber,
-                  alignment: Alignment.bottomRight,
-                  child: SizedBox(
-                    width: 120,
-                    height: 225,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          left: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          right: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          bottom: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid)),
+                      image: DecorationImage(
+                          image: NetworkImage(SignedInAuthUser!.pic5),
+                          fit: BoxFit.cover)),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue[700],
+                    ),
                     child: IconButton(
-                      alignment: Alignment.bottomRight,
-                      icon: Icon(Icons.add_a_photo),
                       onPressed: () {},
+                      icon: Icon(
+                        Icons.add_a_photo,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
                 Container(
+                  width: 120,
+                  height: 225,
+                  alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  color: Colors.amber,
-                  alignment: Alignment.bottomRight,
-                  child: SizedBox(
-                    width: 120,
-                    height: 225,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          left: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          right: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid),
+                          bottom: BorderSide(
+                              color: Colors.blueGrey,
+                              width: 2,
+                              style: BorderStyle.solid)),
+                      image: DecorationImage(
+                          image: NetworkImage(SignedInAuthUser!.pic6),
+                          fit: BoxFit.cover)),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue[700],
+                    ),
                     child: IconButton(
-                      alignment: Alignment.bottomRight,
-                      icon: Icon(Icons.add_a_photo),
                       onPressed: () {},
+                      icon: Icon(
+                        Icons.add_a_photo,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -268,7 +434,7 @@ class _EditProfileState extends State<EditProfile> {
                       hintText:
                           "enter new bio mhfabfkanjfladskfsdnfg a fklafjlada; falfafdl.akfalijfalo    alfjklafkalf ajliiaf"),
                   onChanged: (text) => setState(() {
-                    currentBio = text;
+                    SignedInAuthUser!.bio = text;
                   }),
                 ),
               ),
@@ -281,7 +447,9 @@ class _EditProfileState extends State<EditProfile> {
                             MaterialStateProperty.all<Color>(Colors.white),
                       ),
                       onPressed: () {
-                        giveUserData(currentBio, uid);
+                        giveUserData();
+                        print("this is UID: " + SignedInAuthUser!.uid!);
+                        print("this is BIO: " + SignedInAuthUser!.bio);
                         Navigator.pop(context);
                       },
                       child: Text('Save Profile')))
@@ -291,6 +459,4 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
-
-  onPressed() {}
 }

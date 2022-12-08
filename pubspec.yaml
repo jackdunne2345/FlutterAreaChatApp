@@ -15,14 +15,12 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_swiper: ^1.1.6
-
- 
   cupertino_icons: ^1.0.2
-  flutter_login: ^3.2.0
-  firebase_core: ^1.17.1
-  firebase_auth: ^3.3.19
+  flutter_login: ^4.1.1
+  firebase_core: ^2.3.0
+  firebase_auth: ^4.1.5 
   flutter_swiper_null_safety: ^1.0.2
-  cloud_firestore: ^3.1.18
+  cloud_firestore: ^4.1.0
   google_maps_flutter: ^2.1.10
   geolocator: ^9.0.1
   geocoding: ^2.0.4
@@ -32,6 +30,7 @@ dependencies:
   google_sign_in: ^5.4.2
   image_picker: ^0.8.6
   flutter_profile_picture: ^2.0.0
+  firebase_storage: ^11.0.6
   
 
 
