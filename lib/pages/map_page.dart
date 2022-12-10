@@ -6,28 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
-
-import 'home_page.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class MapPage extends StatefulWidget {
-  double longitude;
-  double latitude;
-  MapPage({Key? key, required this.longitude, required this.latitude})
-      : super(key: key);
+  const MapPage({Key? key}) : super(key: key);
   @override
-  _MapPageState createState() => _MapPageState(longitude, latitude);
+  _MapPageState createState() => _MapPageState();
 }
 
-double cLat = latitude;
-double cLong = longitude;
+double cLat = SignedInAuthUser!.latitude!;
+double cLong = SignedInAuthUser!.longitude!;
 String code = "";
 Set<Marker> list = {};
 BitmapDescriptor? mapMarkImg;
 
 class _MapPageState extends State<MapPage> {
-  double longitude;
-  double latitude;
-  _MapPageState(this.longitude, this.latitude);
   Completer<GoogleMapController> _controller = Completer();
 
   static final CameraPosition _kGooglePlex = CameraPosition(
@@ -49,24 +44,37 @@ class _MapPageState extends State<MapPage> {
   }
 
   Widget getBody(Set<Marker> list) {
-    return GoogleMap(
-      //this gets the long and lat of the camera position and then returns a country code corisponding to that
-      onCameraMove: (object) => {
-        setState(() {
-          cLat = object.target.latitude;
-          cLong = object.target.longitude;
-        })
-      },
-      markers: list,
-      mapType: MapType.normal,
-      buildingsEnabled: false,
-      myLocationButtonEnabled: false,
-      initialCameraPosition: _kGooglePlex,
-      myLocationEnabled: true,
-      onMapCreated: (GoogleMapController controller) {
-        _controller.complete(controller);
-      },
-    );
+    return Stack(children: <Widget>[
+      GoogleMap(
+          //this gets the long and lat of the camera position and then returns a country code corisponding to that
+          onCameraMove: (object) => {
+                setState(() {
+                  cLat = object.target.latitude;
+                  cLong = object.target.longitude;
+                })
+              },
+          markers: list,
+          mapType: MapType.normal,
+          buildingsEnabled: false,
+          myLocationButtonEnabled: false,
+          initialCameraPosition: _kGooglePlex,
+          myLocationEnabled: true,
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+          },
+          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+            Factory<OneSequenceGestureRecognizer>(
+              () => EagerGestureRecognizer(),
+            ),
+          ].toSet()),
+      Container(
+        decoration: BoxDecoration(
+            image: DecorationImage(image: MemoryImage(kTransparentImage))),
+        width: 10,
+        height: double.infinity,
+        alignment: Alignment.centerLeft,
+      )
+    ]);
   }
 }
 

@@ -1,10 +1,11 @@
 // ignore_for_file: unnecessary_new, prefer_const_constructors
-import 'package:area_app/main.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
 import '/firebase.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
+import 'package:area_app/main.dart';
 
 class ProfilePage extends StatefulWidget {
   String uid;
@@ -64,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
 //Swiper
                 itemBuilder: (BuildContext context, int index) {
                   return new Image.network(
-                    "http://via.placeholder.com/288x188",
+                    "https://wonderfulengineering.com/wp-content/uploads/2014/07/Landscape-wallpapers-15.jpg",
                     fit: BoxFit.fill,
                   );
                 },
@@ -135,18 +136,19 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  TextEditingController textarea = TextEditingController();
-
-  @override
-  void initState() {
-    textarea.text = "test"; //default text
-    super.initState();
-  }
-
+  String? profilepic = SignedInAuthUser!.profilePic;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(actions: [
+          TextButton(
+              onPressed: () {},
+              child: Text(style: TextStyle(color: Colors.white), "Save")),
+          TextButton(
+              onPressed: () {},
+              child: Text(style: TextStyle(color: Colors.white), "Discard")),
+        ]),
         body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -158,272 +160,322 @@ class _EditProfileState extends State<EditProfile> {
                 fontsize: 27,
                 img: SignedInAuthUser!.profilePic,
               ),
-              TextButton(
-                  onPressed: () {
-                    AuthWithGoogle().uploadImage('ProfilePicture');
-                  },
-                  child: Text("Change Avatar")),
+              TextButton(onPressed: () {}, child: Text("Change Avatar")),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(
                   width: 120,
-                  height: 225,
+                  height: 215,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          left: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          right: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          bottom: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid)),
-                      image: DecorationImage(
-                          image: NetworkImage(SignedInAuthUser!.pic1),
-                          fit: BoxFit.cover)),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue[700],
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.add_a_photo,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  decoration: BoxDecoration(),
+                  child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: <Widget>[
+                        Center(child: CircularProgressIndicator()),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                                top: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                left: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                right: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                bottom: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid)),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
+                                fit: BoxFit.cover),
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue[700],
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.add_a_photo,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
                 Container(
                   width: 120,
-                  height: 225,
+                  height: 215,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          left: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          right: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          bottom: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid)),
-                      image: DecorationImage(
-                          image: NetworkImage(SignedInAuthUser!.pic2),
-                          fit: BoxFit.cover)),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue[700],
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.add_a_photo,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: <Widget>[
+                        Center(child: CircularProgressIndicator()),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                                top: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                left: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                right: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                bottom: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid)),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
+                                fit: BoxFit.cover),
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue[700],
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.add_a_photo,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
                 Container(
                   width: 120,
-                  height: 225,
+                  height: 215,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          left: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          right: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          bottom: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid)),
-                      image: DecorationImage(
-                          image: NetworkImage(SignedInAuthUser!.pic3),
-                          fit: BoxFit.cover)),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue[700],
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.add_a_photo,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: <Widget>[
+                        Center(child: CircularProgressIndicator()),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                                top: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                left: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                right: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                bottom: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid)),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
+                                fit: BoxFit.cover),
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue[700],
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.add_a_photo,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
               ]),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(
                   width: 120,
-                  height: 225,
+                  height: 215,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                            color: Colors.blueGrey,
-                            width: 2,
-                            style: BorderStyle.solid),
-                        left: BorderSide(
-                            color: Colors.blueGrey,
-                            width: 2,
-                            style: BorderStyle.solid),
-                        right: BorderSide(
-                            color: Colors.blueGrey,
-                            width: 2,
-                            style: BorderStyle.solid),
-                        bottom: BorderSide(
-                            color: Colors.blueGrey,
-                            width: 2,
-                            style: BorderStyle.solid),
-                      ),
-                      image: DecorationImage(
-                          image: NetworkImage(SignedInAuthUser!.pic4),
-                          fit: BoxFit.cover)),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue[700],
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.add_a_photo,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: <Widget>[
+                        Center(child: CircularProgressIndicator()),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                                top: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                left: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                right: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                bottom: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid)),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
+                                fit: BoxFit.cover),
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue[700],
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.add_a_photo,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
                 Container(
                   width: 120,
-                  height: 225,
+                  height: 215,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          left: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          right: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          bottom: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid)),
-                      image: DecorationImage(
-                          image: NetworkImage(SignedInAuthUser!.pic5),
-                          fit: BoxFit.cover)),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue[700],
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.add_a_photo,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: <Widget>[
+                        Center(child: CircularProgressIndicator()),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                                top: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                left: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                right: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                bottom: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid)),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
+                                fit: BoxFit.cover),
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue[700],
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.add_a_photo,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
                 Container(
                   width: 120,
-                  height: 225,
+                  height: 215,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          left: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          right: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid),
-                          bottom: BorderSide(
-                              color: Colors.blueGrey,
-                              width: 2,
-                              style: BorderStyle.solid)),
-                      image: DecorationImage(
-                          image: NetworkImage(SignedInAuthUser!.pic6),
-                          fit: BoxFit.cover)),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue[700],
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.add_a_photo,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: <Widget>[
+                        Center(child: CircularProgressIndicator()),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                                top: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                left: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                right: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid),
+                                bottom: BorderSide(
+                                    color: Colors.blueGrey,
+                                    width: 2,
+                                    style: BorderStyle.solid)),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
+                                fit: BoxFit.cover),
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue[700],
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.add_a_photo,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
               ]),
               Container(
@@ -438,21 +490,6 @@ class _EditProfileState extends State<EditProfile> {
                   }),
                 ),
               ),
-              Container(
-                  margin: const EdgeInsets.all(10),
-                  padding: const EdgeInsets.all(10),
-                  child: ElevatedButton(
-                      style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                      ),
-                      onPressed: () {
-                        giveUserData();
-                        print("this is UID: " + SignedInAuthUser!.uid!);
-                        print("this is BIO: " + SignedInAuthUser!.bio);
-                        Navigator.pop(context);
-                      },
-                      child: Text('Save Profile')))
             ],
           ),
         ),

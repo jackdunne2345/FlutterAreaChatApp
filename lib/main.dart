@@ -16,28 +16,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 //icon pacages
-import 'package:fluttericon/brandico_icons.dart';
 
-class pCodeObject {
-  String pCode = "";
-
-  String get getPcode {
-    return pCode;
-  }
-
-  void set setPcode(String pCode) {
-    this.pCode = pCode;
-  }
-}
-
-pCodeObject pCodeObj = new pCodeObject();
-
-var longitude = 0.0;
-var latitude = 0.0;
-var countryCode = "";
-String pcode = "";
+authUser? SignedInAuthUser;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -47,7 +29,7 @@ Future<void> main() async {
   } on FirebaseException catch (e) {
     print("ERROR FIRBASE" + e.message!);
   }
-
+  SignedInAuthUser = authUser();
   await _updatePosition();
   //runApp is a flutter function that inflates
   //the flutter built ui to the screen
@@ -87,7 +69,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getPostCode(longitude, latitude),
+        future: getPostCode(),
         builder: (context, snapshot) {
           return Scaffold(
             appBar: AppBar(
@@ -101,11 +83,8 @@ class _HomeViewState extends State<HomeView> {
                 actions: [
                   IconButton(
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => MapPage(
-                                  longitude: longitude,
-                                  latitude: latitude,
-                                )));
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => MapPage()));
                       },
                       icon: Icon(Icons.map_outlined)),
                   IconButton(
@@ -125,7 +104,7 @@ class _HomeViewState extends State<HomeView> {
                   ProfilePage(
                     uid: SignedInAuthUser!.uid!,
                   ),
-                  HomePage(pCode: pcode)
+                  HomePage(pCode: SignedInAuthUser!.pcode!), const MapPage()
                 ]),
           );
         });
@@ -137,8 +116,8 @@ Future<void> _updatePosition() async {
   List pm =
       await placemarkFromCoordinates(position.latitude, position.latitude);
 
-  longitude = position.longitude;
-  latitude = position.latitude;
+  SignedInAuthUser!.longitude = position.longitude;
+  SignedInAuthUser!.latitude = position.latitude;
 }
 
 Future<Position> _determinePosition() async {
@@ -224,23 +203,26 @@ class LoginScreen extends StatelessWidget {
 
 //get post code
 // i calcualte what post code marker youa re clsoest to using geolocator package
-Future<void> getPostCode(double long, double lat) async {
+Future<void> getPostCode() async {
   List<double> distance = [];
   List<String> postcode = [];
   await _updatePosition();
-  List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
+  List<Placemark> placemarks = await placemarkFromCoordinates(
+      SignedInAuthUser!.latitude!, SignedInAuthUser!.longitude!);
   //get first entry in the list of placemarkers
   Placemark place = placemarks[0];
   var postCodesResponse = await http.get(Uri.parse(
       'https://data.opendatasoft.com/api/records/1.0/search/?dataset=geonames-postal-code%40public&q=${place.isoCountryCode}&rows=139&facet=country_code&facet=admin_name1&facet=admin_code1&facet=admin_name2'));
   final postCodesJson = jsonDecode(postCodesResponse.body.toString());
   for (var i in postCodesJson['records']) {
-    distance.add(await Geolocator.distanceBetween(lat, long,
-        i["fields"]["latitude"] as double, i["fields"]["longitude"] as double));
+    distance.add(await Geolocator.distanceBetween(
+        SignedInAuthUser!.latitude!,
+        SignedInAuthUser!.longitude!,
+        i["fields"]["latitude"] as double,
+        i["fields"]["longitude"] as double));
     postcode.add(i["fields"]["postal_code"].toString());
   }
   var shortDistance = distance.reduce(min);
   var index = distance.indexOf(shortDistance);
-  pCodeObj.setPcode = postcode.elementAt(index);
-  pcode = postcode.elementAt(index);
+  SignedInAuthUser!.pcode = postcode.elementAt(index);
 }

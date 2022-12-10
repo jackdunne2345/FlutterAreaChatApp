@@ -49,7 +49,6 @@ Future givePostData(String postText, String? uid, String longitude,
 }
 
 //**************************************************************************************************************************************************** */
-authUser? SignedInAuthUser;
 
 class AuthWithGoogle {
   final FirebaseAuth Auth_Entry_point = FirebaseAuth.instance;
@@ -131,8 +130,8 @@ class AuthWithGoogle {
         stream: Auth_Entry_point.authStateChanges(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
-            SignedInAuthUser = authUser();
             SignedInAuthUser!.uid = FirebaseAuth.instance.currentUser!.uid;
+
             return HomeView();
           } else {
             return LoginScreen();
@@ -199,17 +198,15 @@ class AuthWithGoogle {
 class authUser {
   String? uid;
   String? profilePic;
-  String bio = "Hi im new!";
-  String pic1 =
-      "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic1.jpg?alt=media&token=76dc67a4-4774-4f5b-88d6-5bfb53a94c1b";
-  String pic2 =
-      "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic2.jpg?alt=media&token=f6b8b2f8-d7f5-4e31-883d-ad06e96312e7";
-  String pic3 =
-      "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic3.jpg?alt=media&token=9d0b4308-1048-4dc6-9ebf-5f5ef8f1ea85";
-  String pic4 =
-      "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic4.jpg?alt=media&token=b29ef18d-1d37-4480-84d9-21d3dd7221b1";
-  String pic5 =
-      "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic5.jpg?alt=media&token=0439199d-be93-45b0-810e-3166a5dfcf6e";
-  String pic6 =
-      "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic6.jpg?alt=media&token=77433dc3-f956-436f-8cd5-3f40be299233";
+  double? longitude;
+  double? latitude;
+  String? pcode;
+  String? iso;
+  String? bio;
+  String? pic1;
+  String? pic2;
+  String? pic3;
+  String? pic4;
+  String? pic5;
+  String? pic6;
 }

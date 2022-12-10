@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:intl/intl.dart';
 import 'profile_page.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         bottomSheet: Visibility(
-          visible: pCodeObj.getPcode == pCode,
+          visible: SignedInAuthUser!.pcode == pCode,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -94,8 +95,8 @@ class _HomePageState extends State<HomePage> {
                       givePostData(
                           postGive,
                           AuthWithGoogle().Auth_Entry_point.currentUser!.uid,
-                          longitude.toString(),
-                          latitude.toString(),
+                          SignedInAuthUser!.longitude.toString(),
+                          SignedInAuthUser!.latitude.toString(),
                           pCode,
                           AuthWithGoogle().Auth_Entry_point.currentUser!.email,
                           DateTime.now());
@@ -119,51 +120,116 @@ class PostWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _PostWidgetState createState() => _PostWidgetState();
+  _PostWidgetState createState() => _PostWidgetState(snap);
 }
 
 class _PostWidgetState extends State<PostWidget> {
+  var snap;
+
+  _PostWidgetState(this.snap);
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
+    if ("${widget.snap['uid']}" == SignedInAuthUser!.uid) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
           Container(
-            color: Colors.grey[200],
-            width: double.infinity,
-            padding: const EdgeInsets.only(
-              top: 8,
-            ),
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(color: Colors.black),
-                children: [
-                  TextSpan(
-                    text:
-                        "${widget.snap['email']}: ${DateFormat.Hms().format(widget.snap['date_time'].toDate())}: ",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+            alignment: Alignment.centerLeft,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(500)),
+                    color: Colors.blue[100],
                   ),
-                  TextSpan(
-                    text: ' ${widget.snap['post_text']}',
-                  )
-                ],
-              ),
+                  width: 200,
+                  alignment: Alignment.centerRight,
+                  child: Flexible(
+                    child: Text(' ${widget.snap['post_text']}'),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.bottomRight,
+                  child: Text(
+                    DateFormat.Hms().format(widget.snap['date_time'].toDate()),
+                  ),
+                )
+              ],
             ),
           ),
-          Divider(
-              height: 10,
-              thickness: 2,
-              indent: 20,
-              endIndent: 10,
-              color: Colors.blue[100])
+          Container(
+            height: 100,
+            width: 70,
+            alignment: Alignment.centerLeft,
+            child: Column(
+              children: [
+                Text("${widget.snap['email']}"),
+                ProfilePicture(
+                  name: 'Dees',
+                  radius: 25,
+                  fontsize: 27,
+                  img: SignedInAuthUser!.profilePic,
+                ),
+              ],
+            ),
+          )
         ],
-      ),
-    );
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            height: 100,
+            width: 70,
+            alignment: Alignment.centerRight,
+            child: Column(
+              children: [
+                Text("${widget.snap['email']}"),
+                ProfilePicture(
+                  name: 'Dees',
+                  radius: 25,
+                  fontsize: 27,
+                  img: SignedInAuthUser!.profilePic,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(500)),
+                    color: Colors.grey[400],
+                  ),
+                  width: 200,
+                  alignment: Alignment.centerLeft,
+                  child: Flexible(
+                    child: Text(' ${widget.snap['post_text']}'),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    DateFormat.Hms().format(widget.snap['date_time'].toDate()),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      );
+    }
   }
 }
