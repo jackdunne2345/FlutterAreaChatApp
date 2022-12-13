@@ -1,11 +1,17 @@
 // ignore_for_file: unnecessary_new, prefer_const_constructors
 
+import 'dart:io';
+
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
+import 'package:image_picker/image_picker.dart';
 import '/firebase.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:area_app/main.dart';
+import 'package:provider/provider.dart';
+import 'img_change.dart';
 
 class ProfilePage extends StatefulWidget {
   String uid;
@@ -130,13 +136,37 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-class EditProfile extends StatefulWidget {
+class EditProfile extends StatelessWidget {
+  const EditProfile({super.key});
   @override
-  State<EditProfile> createState() => _EditProfileState();
+  Widget build(BuildContext context) {
+    userData.doc(SignedInAuthUser!.uid).get().then((value) {
+      Provider.of<imgChange>(context, listen: false).setPic1 = value['pic1'];
+      Provider.of<imgChange>(context, listen: false).setPic2 = value['pic2'];
+      Provider.of<imgChange>(context, listen: false).setPic3 = value['pic3'];
+      Provider.of<imgChange>(context, listen: false).setPic4 = value['pic4'];
+      Provider.of<imgChange>(context, listen: false).setPic5 = value['pic5'];
+      Provider.of<imgChange>(context, listen: false).setPic6 = value['pic6'];
+      Provider.of<imgChange>(context, listen: false).setPP =
+          value['profilepic'];
+    });
+
+    return Consumer<imgChange>(builder: (_, provider, __) {
+      return GridViewWidget();
+    });
+  }
 }
 
-class _EditProfileState extends State<EditProfile> {
-  String? profilepic = SignedInAuthUser!.profilePic;
+Future<String> uploadImage() async {
+  ImagePicker imagePicker = ImagePicker();
+  XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+  print(file!.path);
+  return file.path;
+}
+
+class GridViewWidget extends StatelessWidget {
+  const GridViewWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -154,12 +184,7 @@ class _EditProfileState extends State<EditProfile> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ProfilePicture(
-                name: 'Dees',
-                radius: 31,
-                fontsize: 27,
-                img: SignedInAuthUser!.profilePic,
-              ),
+              ProfilePicWidget(context.watch<imgChange>().pp),
               TextButton(onPressed: () {}, child: Text("Change Avatar")),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(
@@ -173,31 +198,7 @@ class _EditProfileState extends State<EditProfile> {
                       alignment: Alignment.bottomRight,
                       children: <Widget>[
                         Center(child: CircularProgressIndicator()),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                                top: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                left: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                right: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                bottom: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid)),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
-                                fit: BoxFit.cover),
-                          ),
-                        ),
+                        ImageWidget(context.watch<imgChange>().pic1),
                         Container(
                           width: 40,
                           height: 40,
@@ -206,7 +207,10 @@ class _EditProfileState extends State<EditProfile> {
                             color: Colors.blue[700],
                           ),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              Provider.of<imgChange>(context, listen: false)
+                                  .setPic1 = await uploadImage();
+                            },
                             icon: Icon(
                               Icons.add_a_photo,
                               color: Colors.white,
@@ -225,31 +229,7 @@ class _EditProfileState extends State<EditProfile> {
                       alignment: Alignment.bottomRight,
                       children: <Widget>[
                         Center(child: CircularProgressIndicator()),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                                top: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                left: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                right: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                bottom: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid)),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
-                                fit: BoxFit.cover),
-                          ),
-                        ),
+                        ImageWidget(context.watch<imgChange>().pic2),
                         Container(
                           width: 40,
                           height: 40,
@@ -258,7 +238,10 @@ class _EditProfileState extends State<EditProfile> {
                             color: Colors.blue[700],
                           ),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              Provider.of<imgChange>(context, listen: false)
+                                  .setPic2 = await uploadImage();
+                            },
                             icon: Icon(
                               Icons.add_a_photo,
                               color: Colors.white,
@@ -277,31 +260,7 @@ class _EditProfileState extends State<EditProfile> {
                       alignment: Alignment.bottomRight,
                       children: <Widget>[
                         Center(child: CircularProgressIndicator()),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                                top: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                left: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                right: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                bottom: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid)),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
-                                fit: BoxFit.cover),
-                          ),
-                        ),
+                        ImageWidget(context.watch<imgChange>().pic3),
                         Container(
                           width: 40,
                           height: 40,
@@ -310,7 +269,10 @@ class _EditProfileState extends State<EditProfile> {
                             color: Colors.blue[700],
                           ),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              Provider.of<imgChange>(context, listen: false)
+                                  .setPic3 = await uploadImage();
+                            },
                             icon: Icon(
                               Icons.add_a_photo,
                               color: Colors.white,
@@ -331,31 +293,7 @@ class _EditProfileState extends State<EditProfile> {
                       alignment: Alignment.bottomRight,
                       children: <Widget>[
                         Center(child: CircularProgressIndicator()),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                                top: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                left: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                right: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                bottom: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid)),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
-                                fit: BoxFit.cover),
-                          ),
-                        ),
+                        ImageWidget(context.watch<imgChange>().pic4),
                         Container(
                           width: 40,
                           height: 40,
@@ -364,7 +302,10 @@ class _EditProfileState extends State<EditProfile> {
                             color: Colors.blue[700],
                           ),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              Provider.of<imgChange>(context, listen: false)
+                                  .setPic4 = await uploadImage();
+                            },
                             icon: Icon(
                               Icons.add_a_photo,
                               color: Colors.white,
@@ -383,31 +324,7 @@ class _EditProfileState extends State<EditProfile> {
                       alignment: Alignment.bottomRight,
                       children: <Widget>[
                         Center(child: CircularProgressIndicator()),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                                top: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                left: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                right: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                bottom: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid)),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
-                                fit: BoxFit.cover),
-                          ),
-                        ),
+                        ImageWidget(context.watch<imgChange>().pic5),
                         Container(
                           width: 40,
                           height: 40,
@@ -416,7 +333,10 @@ class _EditProfileState extends State<EditProfile> {
                             color: Colors.blue[700],
                           ),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              Provider.of<imgChange>(context, listen: false)
+                                  .setPic5 = await uploadImage();
+                            },
                             icon: Icon(
                               Icons.add_a_photo,
                               color: Colors.white,
@@ -435,31 +355,7 @@ class _EditProfileState extends State<EditProfile> {
                       alignment: Alignment.bottomRight,
                       children: <Widget>[
                         Center(child: CircularProgressIndicator()),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                                top: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                left: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                right: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid),
-                                bottom: BorderSide(
-                                    color: Colors.blueGrey,
-                                    width: 2,
-                                    style: BorderStyle.solid)),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://www.adorama.com/alc/wp-content/uploads/2018/11/landscape-photography-tips-yosemite-valley-feature.jpg"),
-                                fit: BoxFit.cover),
-                          ),
-                        ),
+                        ImageWidget(context.watch<imgChange>().pic6),
                         Container(
                           width: 40,
                           height: 40,
@@ -468,7 +364,10 @@ class _EditProfileState extends State<EditProfile> {
                             color: Colors.blue[700],
                           ),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              Provider.of<imgChange>(context, listen: false)
+                                  .setPic6 = await uploadImage();
+                            },
                             icon: Icon(
                               Icons.add_a_photo,
                               color: Colors.white,
@@ -482,18 +381,75 @@ class _EditProfileState extends State<EditProfile> {
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(10),
                 child: TextField(
-                  decoration: InputDecoration(
-                      hintText:
-                          "enter new bio mhfabfkanjfladskfsdnfg a fklafjlada; falfafdl.akfalijfalo    alfjklafkalf ajliiaf"),
-                  onChanged: (text) => setState(() {
-                    SignedInAuthUser!.bio = text;
-                  }),
-                ),
+                    decoration: InputDecoration(
+                        hintText:
+                            "enter new bio mhfabfkanjfladskfsdnfg a fklafjlada; falfafdl.akfalijfalo    alfjklafkalf ajliiaf")),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+ImageProvider<Object> displayPicture(String? image) {
+  if (image!.contains("https://")) {
+    return NetworkImage(image);
+  } else {
+    return FileImage(File(image));
+  }
+}
+
+class ImageWidget extends StatelessWidget {
+  ImageWidget(this.pic, {super.key});
+  String pic;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+            top: BorderSide(
+                color: Colors.blueGrey, width: 2, style: BorderStyle.solid),
+            left: BorderSide(
+                color: Colors.blueGrey, width: 2, style: BorderStyle.solid),
+            right: BorderSide(
+                color: Colors.blueGrey, width: 2, style: BorderStyle.solid),
+            bottom: BorderSide(
+                color: Colors.blueGrey, width: 2, style: BorderStyle.solid)),
+        image: DecorationImage(image: displayPicture(pic), fit: BoxFit.cover),
+      ),
+    );
+  }
+}
+
+class ProfilePicWidget extends StatelessWidget {
+  const ProfilePicWidget(this.pic, {super.key});
+  final String pic;
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ProfilePicture(
+          name: 'Dees',
+          radius: 25,
+          fontsize: 27,
+          img: SignedInAuthUser!.profilePic,
+        ),
+        Visibility(
+          visible: context.watch<imgChange>().pp != "",
+          child: CircularProfileAvatar(
+            '',
+            borderColor: Colors.purpleAccent,
+            borderWidth: 5,
+            elevation: 2,
+            radius: 50,
+            child: Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(image: displayPicture(pic)))),
+          ),
+        )
+      ],
     );
   }
 }

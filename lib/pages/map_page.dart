@@ -16,8 +16,8 @@ class MapPage extends StatefulWidget {
   _MapPageState createState() => _MapPageState();
 }
 
-double cLat = SignedInAuthUser!.latitude!;
-double cLong = SignedInAuthUser!.longitude!;
+double cLat = SignedInAuthUser!.latitude;
+double cLong = SignedInAuthUser!.longitude;
 String code = "";
 Set<Marker> list = {};
 BitmapDescriptor? mapMarkImg;

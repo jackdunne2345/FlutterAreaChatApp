@@ -2,10 +2,12 @@
 
 import 'dart:convert';
 import 'dart:math';
+import 'package:area_app/pages/img_change.dart';
 import 'package:http/http.dart' as http;
 import 'package:area_app/pages/home_page.dart';
 import 'package:area_app/pages/map_page.dart';
-
+import 'package:provider/provider.dart';
+import 'pages/img_change.dart';
 import 'package:area_app/pages/profile_page.dart';
 import 'package:flutter/material.dart'; // this imports widgets
 import 'package:flutter_login/flutter_login.dart'; //login package
@@ -14,6 +16,7 @@ import 'package:geolocator/geolocator.dart';
 //firebase imports
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'firebase.dart';
 import 'firebase_options.dart';
 
@@ -31,10 +34,14 @@ Future<void> main() async {
   }
   SignedInAuthUser = authUser();
   await _updatePosition();
+  await getPostCode();
   //runApp is a flutter function that inflates
   //the flutter built ui to the screen
   //this funciton takes a "widget" as an argument
-  runApp(MyApp());
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider(create: (_) => imgChange())],
+    child: MyApp(),
+  ));
 }
 
 // typing 'st' allows you to genreate this statless widget code
@@ -68,46 +75,42 @@ class _HomeViewState extends State<HomeView> {
   get onPressed => null;
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getPostCode(),
-        builder: (context, snapshot) {
-          return Scaffold(
-            appBar: AppBar(
-                // this is the app bar and will render above the body wich contains the page view
-                backgroundColor: Colors.blue,
-                elevation: 0,
-                title: const Text(
-                  "Area App",
-                  style: TextStyle(color: Colors.white),
-                ),
-                actions: [
-                  IconButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => MapPage()));
-                      },
-                      icon: Icon(Icons.map_outlined)),
-                  IconButton(
-                      onPressed: () {
-                        AuthWithGoogle().signOut();
-                      },
-                      icon: Text("log out"))
-                  // ignore: prefer_const_constructors
-                ]),
-            body: //HomePage(pCode: pCode)
-                PageView(
-                    pageSnapping: true,
-                    //page view allows widgets to be rendered in this widgets scaffold in a scrollable view
-                    controller: pageController,
-                    children: [
-                  //these are the pages within the page view byu default it scrolls horizzontly
-                  ProfilePage(
-                    uid: SignedInAuthUser!.uid!,
-                  ),
-                  HomePage(pCode: SignedInAuthUser!.pcode!), const MapPage()
-                ]),
-          );
-        });
+    return Scaffold(
+      appBar: AppBar(
+          // this is the app bar and will render above the body wich contains the page view
+          backgroundColor: Colors.blue,
+          elevation: 0,
+          title: const Text(
+            "Area App",
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) => MapPage()));
+                },
+                icon: Icon(Icons.map_outlined)),
+            IconButton(
+                onPressed: () {
+                  AuthWithGoogle().signOut();
+                },
+                icon: Text("log out"))
+            // ignore: prefer_const_constructors
+          ]),
+      body: //HomePage(pCode: pCode)
+          PageView(
+              pageSnapping: true,
+              //page view allows widgets to be rendered in this widgets scaffold in a scrollable view
+              controller: pageController,
+              children: [
+            //these are the pages within the page view byu default it scrolls horizzontly
+            ProfilePage(
+              uid: SignedInAuthUser!.uid!,
+            ),
+            HomePage(pCode: SignedInAuthUser!.pcode!), const MapPage()
+          ]),
+    );
   }
 }
 
@@ -203,12 +206,12 @@ class LoginScreen extends StatelessWidget {
 
 //get post code
 // i calcualte what post code marker youa re clsoest to using geolocator package
-Future<void> getPostCode() async {
+Future getPostCode() async {
   List<double> distance = [];
   List<String> postcode = [];
   await _updatePosition();
   List<Placemark> placemarks = await placemarkFromCoordinates(
-      SignedInAuthUser!.latitude!, SignedInAuthUser!.longitude!);
+      SignedInAuthUser!.latitude, SignedInAuthUser!.longitude);
   //get first entry in the list of placemarkers
   Placemark place = placemarks[0];
   var postCodesResponse = await http.get(Uri.parse(
@@ -216,8 +219,8 @@ Future<void> getPostCode() async {
   final postCodesJson = jsonDecode(postCodesResponse.body.toString());
   for (var i in postCodesJson['records']) {
     distance.add(await Geolocator.distanceBetween(
-        SignedInAuthUser!.latitude!,
-        SignedInAuthUser!.longitude!,
+        SignedInAuthUser!.latitude,
+        SignedInAuthUser!.longitude,
         i["fields"]["latitude"] as double,
         i["fields"]["longitude"] as double));
     postcode.add(i["fields"]["postal_code"].toString());

@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/provider.dart';
+import '/pages/img_change.dart';
 import 'dart:io';
 
 //this object a userData object referning to the "userCollection" colelction on my firestore
@@ -169,44 +169,20 @@ class AuthWithGoogle {
       });
     }
   }
-
-  //upload iamges
-  void uploadImage(String imageName) async {
-    ImagePicker imagePicker = ImagePicker();
-    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-    print('${file?.path}');
-    //ROOT REFERENCE
-    Reference refRoot = FirebaseStorage.instance.ref();
-    Reference refDirImage = refRoot.child(SignedInAuthUser!.uid!);
-    //IMAGE REFERECNE
-    Reference refUploadImage = refDirImage.child(imageName);
-    try {
-      await refUploadImage.putFile(File(file!.path));
-      String url = await refUploadImage.getDownloadURL();
-
-      await userData
-          .doc(SignedInAuthUser!.uid)
-          .set({'profilepic': url})
-          .then((value) => print("Data added"))
-          .catchError((error) => print("Failed to add data: $error"));
-    } catch (e) {
-      print(e);
-    }
-  }
 }
 
 class authUser {
   String? uid;
   String? profilePic;
-  double? longitude;
-  double? latitude;
+  double longitude = 0.0;
+  double latitude = 0.0;
   String? pcode;
   String? iso;
   String? bio;
-  String? pic1;
-  String? pic2;
-  String? pic3;
-  String? pic4;
-  String? pic5;
-  String? pic6;
+  File? pic1;
+  File? pic2;
+  File? pic3;
+  File? pic4;
+  File? pic5;
+  File? pic6;
 }
