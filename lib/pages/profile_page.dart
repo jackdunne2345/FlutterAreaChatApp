@@ -51,7 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
             data['pic6'],
           ];
 
-          String name = data['bio'];
+          String name = data['username'];
           String bio = data['bio'];
 
           return Column(
@@ -136,24 +136,24 @@ class EditProfile extends StatelessWidget {
   const EditProfile({super.key});
   @override
   Widget build(BuildContext context) {
-    userData.doc(SignedInAuthUser!.uid).get().then((value) {
+    userData.doc(SignedInAuthUser.uid).get().then((value) {
       Provider.of<imgChange>(context, listen: false).setPic1 = value['pic1'];
-      SignedInAuthUser!.pic1 = value['pic1'];
+      SignedInAuthUser.pic1 = value['pic1'];
       Provider.of<imgChange>(context, listen: false).setPic2 = value['pic2'];
-      SignedInAuthUser!.pic2 = value['pic2'];
+      SignedInAuthUser.pic2 = value['pic2'];
       Provider.of<imgChange>(context, listen: false).setPic3 = value['pic3'];
-      SignedInAuthUser!.pic3 = value['pic3'];
+      SignedInAuthUser.pic3 = value['pic3'];
       Provider.of<imgChange>(context, listen: false).setPic4 = value['pic4'];
-      SignedInAuthUser!.pic4 = value['pic4'];
+      SignedInAuthUser.pic4 = value['pic4'];
       Provider.of<imgChange>(context, listen: false).setPic5 = value['pic5'];
-      SignedInAuthUser!.pic5 = value['pic5'];
+      SignedInAuthUser.pic5 = value['pic5'];
       Provider.of<imgChange>(context, listen: false).setPic6 = value['pic6'];
-      SignedInAuthUser!.pic6 = value['pic6'];
+      SignedInAuthUser.pic6 = value['pic6'];
       Provider.of<imgChange>(context, listen: false).setPP =
           value['profilepic'];
-      SignedInAuthUser!.profilePic = value['profilepic'];
+      SignedInAuthUser.profilePic = value['profilepic'];
       Provider.of<imgChange>(context, listen: false).setBio = value['bio'];
-      SignedInAuthUser!.bio = value['bio'];
+      SignedInAuthUser.bio = value['bio'];
     });
 
     return Consumer<imgChange>(builder: (_, provider, __) {
@@ -190,14 +190,14 @@ class GridViewWidget extends StatelessWidget {
           TextButton(
               onPressed: () async {
                 Reference refRoot = FirebaseStorage.instance.ref();
-                Reference userFolder = refRoot.child(SignedInAuthUser!.uid!);
+                Reference userFolder = refRoot.child(SignedInAuthUser.uid);
                 if (pic1.startsWith("https://")) {
                 } else {
                   try {
                     Reference imgToUpload = userFolder.child('pic1');
                     await imgToUpload.putFile(File(pic1));
                     String url = await imgToUpload.getDownloadURL();
-                    SignedInAuthUser!.pic1 = url;
+                    SignedInAuthUser.pic1 = url;
                   } catch (error) {
                     print(error.toString());
                   }
@@ -207,21 +207,21 @@ class GridViewWidget extends StatelessWidget {
                   Reference imgToUpload = userFolder.child('pic2');
                   await imgToUpload.putFile(File(pic2));
                   String url = await imgToUpload.getDownloadURL();
-                  SignedInAuthUser!.pic2 = url;
+                  SignedInAuthUser.pic2 = url;
                 }
                 if (pic3.startsWith("https://")) {
                 } else {
                   Reference imgToUpload = userFolder.child('pic3');
                   await imgToUpload.putFile(File(pic3));
                   String url = await imgToUpload.getDownloadURL();
-                  SignedInAuthUser!.pic3 = url;
+                  SignedInAuthUser.pic3 = url;
                 }
                 if (pic4.startsWith("https://")) {
                 } else {
                   Reference imgToUpload = userFolder.child('pic4');
                   await imgToUpload.putFile(File(pic4));
                   String url = await imgToUpload.getDownloadURL();
-                  SignedInAuthUser!.pic4 = url;
+                  SignedInAuthUser.pic4 = url;
                 }
 
                 if (pic4.startsWith("https://")) {
@@ -229,7 +229,7 @@ class GridViewWidget extends StatelessWidget {
                   Reference imgToUpload = userFolder.child('pic5');
                   await imgToUpload.putFile(File(pic5));
                   String url = await imgToUpload.getDownloadURL();
-                  SignedInAuthUser!.pic5 = url;
+                  SignedInAuthUser.pic5 = url;
                 }
 
                 if (pic6.startsWith("https://")) {
@@ -237,7 +237,7 @@ class GridViewWidget extends StatelessWidget {
                   Reference imgToUpload = userFolder.child('pic6');
                   await imgToUpload.putFile(File(pic6));
                   String url = await imgToUpload.getDownloadURL();
-                  SignedInAuthUser!.pic6 = url;
+                  SignedInAuthUser.pic6 = url;
                 }
                 if (pp.startsWith("https://")) {
                 } else if (pp == "") {
@@ -245,20 +245,20 @@ class GridViewWidget extends StatelessWidget {
                   Reference imgToUpload = userFolder.child('ProfilePic');
                   await imgToUpload.putFile(File(pp));
                   String url = await imgToUpload.getDownloadURL();
-                  SignedInAuthUser!.profilePic = url;
+                  SignedInAuthUser.profilePic = url;
                 }
 
                 userData
-                    .doc(SignedInAuthUser!.uid)
+                    .doc(SignedInAuthUser.uid)
                     .set({
                       'bio': textarea.text,
-                      'profilepic': SignedInAuthUser!.profilePic,
-                      'pic1': SignedInAuthUser!.pic1,
-                      'pic2': SignedInAuthUser!.pic2,
-                      'pic3': SignedInAuthUser!.pic3,
-                      'pic4': SignedInAuthUser!.pic4,
-                      'pic5': SignedInAuthUser!.pic5,
-                      'pic6': SignedInAuthUser!.pic6,
+                      'profilepic': SignedInAuthUser.profilePic,
+                      'pic1': SignedInAuthUser.pic1,
+                      'pic2': SignedInAuthUser.pic2,
+                      'pic3': SignedInAuthUser.pic3,
+                      'pic4': SignedInAuthUser.pic4,
+                      'pic5': SignedInAuthUser.pic5,
+                      'pic6': SignedInAuthUser.pic6,
                     })
                     .then((value) => print("Data added"))
                     .catchError((error) => print("Failed to add data: $error"));

@@ -3,9 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:provider/provider.dart';
-import '/pages/img_change.dart';
-import 'dart:io';
 
 //this object a userData object referning to the "userCollection" colelction on my firestore
 
@@ -16,18 +13,25 @@ final CollectionReference postData =
     FirebaseFirestore.instance.collection('posts');
 
 //**************************************************************************************************************************************************** */
-Future giveUserData() async {
+Future giveUserData(String name) async {
   return await userData
       .doc(SignedInAuthUser!.uid)
       .set({
-        'bio': SignedInAuthUser!.bio,
+        'bio': "Hi im new :)",
         'profilepic': SignedInAuthUser!.profilePic,
-        'pic1': SignedInAuthUser!.pic1,
-        'pic2': SignedInAuthUser!.pic2,
-        'pic3': SignedInAuthUser!.pic3,
-        'pic4': SignedInAuthUser!.pic4,
-        'pic5': SignedInAuthUser!.pic5,
-        'pic6': SignedInAuthUser!.pic6,
+        'username': name,
+        'pic1':
+            "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic1.jpg?alt=media&token=76dc67a4-4774-4f5b-88d6-5bfb53a94c1b",
+        'pic2':
+            "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic2.jpg?alt=media&token=f6b8b2f8-d7f5-4e31-883d-ad06e96312e7",
+        'pic3':
+            "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic3.jpg?alt=media&token=9d0b4308-1048-4dc6-9ebf-5f5ef8f1ea85",
+        'pic4':
+            "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic4.jpg?alt=media&token=b29ef18d-1d37-4480-84d9-21d3dd7221b1",
+        'pic5':
+            "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic5.jpg?alt=media&token=0439199d-be93-45b0-810e-3166a5dfcf6e",
+        'pic6':
+            "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic6.jpg?alt=media&token=77433dc3-f956-436f-8cd5-3f40be299233",
       })
       .then((value) => print("Data added"))
       .catchError((error) => print("Failed to add data: $error"));
@@ -35,15 +39,13 @@ Future giveUserData() async {
 //**************************************************************************************************************************************************** */
 
 //**************************************************************************************************************************************************** */
-Future givePostData(String postText, String? uid, String longitude,
-    String latitude, String countryCode, String? email, DateTime time) async {
+Future givePostData(String postText, String? uid, String postCode, String? name,
+    DateTime time) async {
   return await postData.doc().set({
     'post_text': postText,
-    'longitude': longitude,
-    'latitude': latitude,
     'uid': uid,
-    'email': email,
-    'post_code': countryCode,
+    'name': name,
+    'post_code': postCode,
     'date_time': time
   });
 }
@@ -54,7 +56,7 @@ class AuthWithGoogle {
   final FirebaseAuth Auth_Entry_point = FirebaseAuth.instance;
   //**************************************************************************************************************************************************** */
   signOut() {
-    SignedInAuthUser = null;
+    SignedInAuthUser = authUser();
     Auth_Entry_point.signOut();
   }
   //**************************************************************************************************************************************************** */
@@ -79,16 +81,16 @@ class AuthWithGoogle {
   }
   //**************************************************************************************************************************************************** */
 
-  Future<String?> signUpEmail(String name, String password) async {
+  Future<String?> signUpEmail(
+      String name, String password, String screenName) async {
     try {
       UserCredential create =
           await Auth_Entry_point.createUserWithEmailAndPassword(
               email: name, password: password);
 
-      SignedInAuthUser = authUser();
-      SignedInAuthUser!.uid = FirebaseAuth.instance.currentUser!.uid;
+      SignedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
       //set user data to default data when account is made
-      giveUserData();
+      await giveUserData(screenName);
 
       return Future.delayed(loginTime).then((_) async {
         //this null retunr means there is no errors and will laucnh app
@@ -130,8 +132,10 @@ class AuthWithGoogle {
         stream: Auth_Entry_point.authStateChanges(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
-            SignedInAuthUser!.uid = FirebaseAuth.instance.currentUser!.uid;
-
+            SignedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
+            userData.doc(SignedInAuthUser.uid).get().then((value) {
+              SignedInAuthUser.name = value['username'];
+            });
             return HomeView();
           } else {
             return LoginScreen();
@@ -159,7 +163,7 @@ class AuthWithGoogle {
       SignedInAuthUser = authUser();
       SignedInAuthUser!.uid = FirebaseAuth.instance.currentUser!.uid;
       //need to fix this
-      giveUserData();
+      giveUserData(googleUser.displayName!);
       return Future.delayed(loginTime).then((_) {
         return null;
       });
@@ -172,17 +176,17 @@ class AuthWithGoogle {
 }
 
 class authUser {
-  String? uid;
-  String? profilePic;
+  String uid = "";
+  String profilePic = "";
   double longitude = 0.0;
   double latitude = 0.0;
-  String? pcode;
-  String? iso;
-  String? bio;
-  String? pic1;
-  String? pic2;
-  String? pic3;
-  String? pic4;
-  String? pic5;
-  String? pic6;
+  String pcode = "";
+  String name = "";
+  String bio = "";
+  String pic1 = "";
+  String pic2 = "";
+  String pic3 = "";
+  String pic4 = "";
+  String pic5 = "";
+  String pic6 = "";
 }

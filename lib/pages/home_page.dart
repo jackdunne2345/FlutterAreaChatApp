@@ -88,20 +88,8 @@ class _HomePageState extends State<HomePage> {
                               MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         onPressed: () async {
-                          givePostData(
-                              postGive,
-                              AuthWithGoogle()
-                                  .Auth_Entry_point
-                                  .currentUser!
-                                  .uid,
-                              SignedInAuthUser!.longitude.toString(),
-                              SignedInAuthUser!.latitude.toString(),
-                              pCode,
-                              AuthWithGoogle()
-                                  .Auth_Entry_point
-                                  .currentUser!
-                                  .email,
-                              DateTime.now());
+                          givePostData(postGive, SignedInAuthUser.uid, pCode,
+                              SignedInAuthUser.name, DateTime.now());
                         },
                         child: Text('Post')),
                   ),
@@ -169,16 +157,17 @@ class _PostWidgetState extends State<PostWidget> {
               ),
             ),
             Container(
+              margin: const EdgeInsets.all(10),
               height: 100,
               alignment: Alignment.centerLeft,
               child: Column(
                 children: [
-                  Text("${widget.snap['email']}"),
+                  Text("${widget.snap['name']}"),
                   ProfilePicture(
                     name: 'Dees',
                     radius: 25,
                     fontsize: 27,
-                    img: SignedInAuthUser!.profilePic,
+                    img: SignedInAuthUser.profilePic,
                   ),
                 ],
               ),
@@ -209,7 +198,7 @@ class _PostWidgetState extends State<PostWidget> {
                       name: 'Dees',
                       radius: 25,
                       fontsize: 27,
-                      img: SignedInAuthUser!.profilePic,
+                      img: SignedInAuthUser.profilePic,
                     ),
                   ],
                 ),

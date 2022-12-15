@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:area_app/pages/home_page.dart';
 import 'package:area_app/pages/map_page.dart';
 import 'package:provider/provider.dart';
-import 'pages/img_change.dart';
+
 import 'package:area_app/pages/profile_page.dart';
 import 'package:flutter/material.dart'; // this imports widgets
 import 'package:flutter_login/flutter_login.dart'; //login package
@@ -22,7 +22,7 @@ import 'firebase_options.dart';
 
 //icon pacages
 
-authUser? SignedInAuthUser;
+authUser SignedInAuthUser = authUser();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -170,7 +170,10 @@ class LoginScreen extends StatelessWidget {
 
   Future<String?> _signupUser(SignupData data) {
     debugPrint('Signup Email: ${data.name}, Password: ${data.password}');
-    return AuthWithGoogle().signUpEmail(data.name!, data.password!);
+    Map<String, String> userName = data.additionalSignupData!;
+    print("TEST USER NAME: " + userName['UserName']!);
+    return AuthWithGoogle()
+        .signUpEmail(data.name!, data.password!, userName['UserName']!);
   }
 
   Future<String?> _recoverPassword(String name) {
@@ -184,7 +187,7 @@ class LoginScreen extends StatelessWidget {
       title: 'Area App',
       logo: AssetImage('assets/images/logo.png'),
       additionalSignupFields: [
-        const UserFormField(keyName: "User Name", displayName: "Screen Name")
+        const UserFormField(keyName: "UserName", displayName: "Screen Name")
       ],
       onLogin: _authUser,
       onSignup: _signupUser,
