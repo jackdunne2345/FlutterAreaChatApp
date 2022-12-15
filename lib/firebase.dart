@@ -179,10 +179,10 @@ class authUser {
   String? pcode;
   String? iso;
   String? bio;
-  File? pic1;
-  File? pic2;
-  File? pic3;
-  File? pic4;
-  File? pic5;
-  File? pic6;
+  String? pic1;
+  String? pic2;
+  String? pic3;
+  String? pic4;
+  String? pic5;
+  String? pic6;
 }

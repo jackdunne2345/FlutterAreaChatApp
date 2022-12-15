@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class imgChange with ChangeNotifier {
+  String _bio = "";
   String _pic1 = "";
   String _pic2 = "";
   String _pic3 = "";
@@ -15,6 +16,11 @@ class imgChange with ChangeNotifier {
   String get pic5 => _pic5;
   String get pic6 => _pic6;
   String get pp => _picp;
+  String get bio => _bio;
+
+  set setBio(String value) {
+    _bio = value;
+  }
 
   set setPP(String value) {
     _picp = value;
