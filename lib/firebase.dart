@@ -40,13 +40,14 @@ Future giveUserData(String name) async {
 
 //**************************************************************************************************************************************************** */
 Future givePostData(String postText, String? uid, String postCode, String? name,
-    DateTime time) async {
+    DateTime time, String pic) async {
   return await postData.doc().set({
     'post_text': postText,
     'uid': uid,
     'name': name,
     'post_code': postCode,
-    'date_time': time
+    'date_time': time,
+    'pic': pic
   });
 }
 
@@ -133,8 +134,9 @@ class AuthWithGoogle {
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
             SignedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
-            userData.doc(SignedInAuthUser.uid).get().then((value) {
-              SignedInAuthUser.name = value['username'];
+            userData.doc(SignedInAuthUser.uid).get().then((value) async {
+              SignedInAuthUser.name = await value['username'];
+              SignedInAuthUser.profilePic = await value['profilepic'];
             });
             return HomeView();
           } else {
@@ -161,9 +163,19 @@ class AuthWithGoogle {
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
       SignedInAuthUser = authUser();
-      SignedInAuthUser!.uid = FirebaseAuth.instance.currentUser!.uid;
+      SignedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
       //need to fix this
-      giveUserData(googleUser.displayName!);
+      DocumentSnapshot<Object?> _query =
+          await userData.doc(SignedInAuthUser.uid).get();
+      if (_query.exists) {
+      } else {
+        await giveUserData(googleUser.displayName!);
+      }
+      userData.doc(SignedInAuthUser.uid).get().then((value) async {
+        SignedInAuthUser.name = await value['username'];
+        SignedInAuthUser.profilePic = await value['profilepic'];
+      });
+
       return Future.delayed(loginTime).then((_) {
         return null;
       });

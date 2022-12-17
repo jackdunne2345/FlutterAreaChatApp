@@ -31,8 +31,8 @@ class _HomePageState extends State<HomePage> {
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('posts')
-                  .where('post_code', isEqualTo: pCode)
                   .where('date_time', isGreaterThan: timeNow)
+                  .where('post_code', isEqualTo: pCode)
                   .orderBy('date_time', descending: true)
                   .snapshots(),
               builder: (context,
@@ -42,62 +42,75 @@ class _HomePageState extends State<HomePage> {
                     child: CircularProgressIndicator(),
                   );
                 }
-                return Expanded(
-                  child: ListView.builder(
-                    reverse: true,
-                    shrinkWrap: true,
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (ctx, index) => GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            //i have to make it impossible for someone to accses this function if they dont have the corret creditials
-                            builder: (context) => ProfilePage(
-                                  uid: snapshot.data!.docs[index].data()['uid'],
-                                )));
-                      },
-                      child: PostWidget(
-                        snap: snapshot.data!.docs[index].data(),
+                if (snapshot.data!.size == 0) {
+                  print("testtt");
+                  return const Expanded(
+                      child: Center(
+                          child: Text("looks like no one is talking here")));
+                } else {
+                  print(snapshot.data);
+                  return Expanded(
+                    child: ListView.builder(
+                      reverse: true,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (ctx, index) => GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              //i have to make it impossible for someone to accses this function if they dont have the corret creditials
+                              builder: (context) => ProfilePage(
+                                    uid: snapshot.data!.docs[index]
+                                        .data()['uid'],
+                                  )));
+                        },
+                        child: PostWidget(
+                          snap: snapshot.data!.docs[index].data(),
+                        ),
                       ),
                     ),
-                  ),
-                );
+                  );
+                }
               },
             ),
             Visibility(
-              visible: SignedInAuthUser!.pcode == pCode,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 315,
-                    height: 60,
-                    child: TextField(
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "What you wanna tell every one?"),
-                      onChanged: (text) => setState(() {
-                        postGive = text;
-                      }),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 60,
-                    child: ElevatedButton(
-                        style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                        ),
-                        onPressed: () async {
-                          givePostData(postGive, SignedInAuthUser.uid, pCode,
-                              SignedInAuthUser.name, DateTime.now());
-                        },
-                        child: Text('Post')),
-                  ),
-                ],
-              ),
-            ),
+                visible: SignedInAuthUser.pcode == pCode, child: TextEnter()),
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.01,
+            )
           ])),
     );
+  }
+}
+
+class TextEnter extends StatelessWidget {
+  TextEnter({super.key});
+
+  @override
+  TextEditingController textarea = TextEditingController();
+  Widget build(BuildContext context) {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        height: MediaQuery.of(context).size.height * 0.1,
+        child: TextField(
+          controller: textarea,
+          onEditingComplete: () async {
+            await givePostData(
+                textarea.text,
+                SignedInAuthUser.uid,
+                SignedInAuthUser.pcode,
+                SignedInAuthUser.name,
+                DateTime.now(),
+                SignedInAuthUser.profilePic);
+            textarea.clear();
+          },
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: "What you wanna tell every one?"),
+        ),
+      )
+    ]);
   }
 }
 

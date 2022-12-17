@@ -7,12 +7,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '/firebase.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:area_app/main.dart';
 import 'package:provider/provider.dart';
-import 'img_change.dart';
+import 'image_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   String uid;
@@ -53,8 +54,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
           String name = data['username'];
           String bio = data['bio'];
+          String pp = data['profilepic'];
+          print(pp);
 
-          return Column(
+          return SingleChildScrollView(
+              child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
@@ -64,11 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Colors.blue[300],
                 child: Row(
                   children: [
-                    ProfilePicture(
-                      name: name,
-                      radius: 31,
-                      fontsize: 27,
-                    ),
+                    ProfilePicWidget(pp, name),
                     SizedBox(width: 5),
                     Text(
                         style: TextStyle(
@@ -97,11 +97,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               Container(
-                  margin: const EdgeInsets.all(10),
-                  padding: const EdgeInsets.all(10),
-                  //future builder builds itself based on future value returned from the snapshot
-                  child:
-                      Text(style: TextStyle(fontSize: 15), "${data['bio']}")),
+                alignment: Alignment.bottomLeft,
+                margin: const EdgeInsets.all(10),
+                child: Text(
+                  "About: ",
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+                ),
+              ),
+              Container(
+                alignment: Alignment.topLeft,
+                color: Colors.blue[50],
+                width: 500,
+                margin: const EdgeInsets.all(10),
+                child: Flexible(child: Text(softWrap: true, bio.toString())),
+              ),
               Container(
                 margin: const EdgeInsets.all(5),
                 padding: const EdgeInsets.all(5),
@@ -123,7 +132,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               )
             ],
-          );
+          ));
         } else {
           return Text("loading");
         }
@@ -162,7 +171,7 @@ class EditProfile extends StatelessWidget {
   }
 }
 
-Future<String> uploadImage() async {
+Future<String> pickImg() async {
   ImagePicker imagePicker = ImagePicker();
   XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
 
@@ -259,13 +268,18 @@ class GridViewWidget extends StatelessWidget {
                       'pic4': SignedInAuthUser.pic4,
                       'pic5': SignedInAuthUser.pic5,
                       'pic6': SignedInAuthUser.pic6,
+                      'username': SignedInAuthUser.name
                     })
                     .then((value) => print("Data added"))
                     .catchError((error) => print("Failed to add data: $error"));
               },
               child: Text(style: TextStyle(color: Colors.white), "Save")),
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                {
+                  Navigator.pop(context);
+                }
+              },
               child: Text(style: TextStyle(color: Colors.white), "Discard")),
         ]),
         body: SingleChildScrollView(
@@ -273,17 +287,18 @@ class GridViewWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ProfilePicWidget(context.watch<imgChange>().pp),
+              ProfilePicWidget(
+                  context.watch<imgChange>().pp, SignedInAuthUser.name),
               TextButton(
                   onPressed: () async {
                     Provider.of<imgChange>(context, listen: false).setPP =
-                        await uploadImage();
+                        await pickImg();
                   },
                   child: Text("Change Avatar")),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(
-                  width: 120,
-                  height: 215,
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: MediaQuery.of(context).size.width * 0.60,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
@@ -303,7 +318,7 @@ class GridViewWidget extends StatelessWidget {
                           child: IconButton(
                             onPressed: () async {
                               Provider.of<imgChange>(context, listen: false)
-                                  .setPic1 = await uploadImage();
+                                  .setPic1 = await pickImg();
                             },
                             icon: Icon(
                               Icons.add_a_photo,
@@ -314,8 +329,8 @@ class GridViewWidget extends StatelessWidget {
                       ]),
                 ),
                 Container(
-                  width: 120,
-                  height: 215,
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: MediaQuery.of(context).size.width * 0.60,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
@@ -334,7 +349,7 @@ class GridViewWidget extends StatelessWidget {
                           child: IconButton(
                             onPressed: () async {
                               Provider.of<imgChange>(context, listen: false)
-                                  .setPic2 = await uploadImage();
+                                  .setPic2 = await pickImg();
                             },
                             icon: Icon(
                               Icons.add_a_photo,
@@ -345,8 +360,8 @@ class GridViewWidget extends StatelessWidget {
                       ]),
                 ),
                 Container(
-                  width: 120,
-                  height: 215,
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: MediaQuery.of(context).size.width * 0.60,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
@@ -365,7 +380,7 @@ class GridViewWidget extends StatelessWidget {
                           child: IconButton(
                             onPressed: () async {
                               Provider.of<imgChange>(context, listen: false)
-                                  .setPic3 = await uploadImage();
+                                  .setPic3 = await pickImg();
                             },
                             icon: Icon(
                               Icons.add_a_photo,
@@ -378,8 +393,8 @@ class GridViewWidget extends StatelessWidget {
               ]),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(
-                  width: 120,
-                  height: 215,
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: MediaQuery.of(context).size.width * 0.60,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
@@ -398,7 +413,7 @@ class GridViewWidget extends StatelessWidget {
                           child: IconButton(
                             onPressed: () async {
                               Provider.of<imgChange>(context, listen: false)
-                                  .setPic4 = await uploadImage();
+                                  .setPic4 = await pickImg();
                             },
                             icon: Icon(
                               Icons.add_a_photo,
@@ -409,8 +424,8 @@ class GridViewWidget extends StatelessWidget {
                       ]),
                 ),
                 Container(
-                  width: 120,
-                  height: 215,
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: MediaQuery.of(context).size.width * 0.60,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
@@ -429,7 +444,7 @@ class GridViewWidget extends StatelessWidget {
                           child: IconButton(
                             onPressed: () async {
                               Provider.of<imgChange>(context, listen: false)
-                                  .setPic5 = await uploadImage();
+                                  .setPic5 = await pickImg();
                             },
                             icon: Icon(
                               Icons.add_a_photo,
@@ -440,8 +455,8 @@ class GridViewWidget extends StatelessWidget {
                       ]),
                 ),
                 Container(
-                  width: 120,
-                  height: 215,
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: MediaQuery.of(context).size.width * 0.60,
                   alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(2),
                   padding: const EdgeInsets.all(2),
@@ -460,7 +475,7 @@ class GridViewWidget extends StatelessWidget {
                           child: IconButton(
                             onPressed: () async {
                               Provider.of<imgChange>(context, listen: false)
-                                  .setPic6 = await uploadImage();
+                                  .setPic6 = await pickImg();
                             },
                             icon: Icon(
                               Icons.add_a_photo,
@@ -483,9 +498,9 @@ class GridViewWidget extends StatelessWidget {
                 color: Colors.blue[50],
                 width: 500,
                 margin: const EdgeInsets.all(10),
-                child: Flexible(
-                    child: TextField(maxLines: 8, controller: textarea)),
-              ),
+                child: TextField(
+                    maxLength: 350, maxLines: 8, controller: textarea),
+              )
             ],
           ),
         ),
@@ -525,32 +540,30 @@ class ImageWidget extends StatelessWidget {
 }
 
 class ProfilePicWidget extends StatelessWidget {
-  const ProfilePicWidget(this.pic, {super.key});
+  const ProfilePicWidget(this.pic, this.name, {super.key});
   final String pic;
+  final String name;
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ProfilePicture(
-          name: 'Dees',
-          radius: 25,
-          fontsize: 27,
-          img: SignedInAuthUser!.profilePic,
+    if (pic == "") {
+      return ProfilePicture(
+        name: name,
+        radius: 31,
+        fontsize: 27,
+      );
+    } else {
+      return Visibility(
+        visible: context.watch<imgChange>().pp != "",
+        child: CircularProfileAvatar(
+          '',
+          elevation: 2,
+          radius: 31,
+          child: Container(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: displayPicture(pic), fit: BoxFit.fill))),
         ),
-        Visibility(
-          visible: context.watch<imgChange>().pp != "",
-          child: CircularProfileAvatar(
-            '',
-            borderColor: Colors.purpleAccent,
-            borderWidth: 5,
-            elevation: 2,
-            radius: 50,
-            child: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(image: displayPicture(pic)))),
-          ),
-        )
-      ],
-    );
+      );
+    }
   }
 }

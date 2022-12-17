@@ -2,12 +2,13 @@
 
 import 'dart:convert';
 import 'dart:math';
-import 'package:area_app/pages/img_change.dart';
+import 'package:area_app/pages/image_provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:area_app/pages/home_page.dart';
 import 'package:area_app/pages/map_page.dart';
 import 'package:provider/provider.dart';
-
+import 'providers/marker_provider.dart';
 import 'package:area_app/pages/profile_page.dart';
 import 'package:flutter/material.dart'; // this imports widgets
 import 'package:flutter_login/flutter_login.dart'; //login package
@@ -39,7 +40,10 @@ Future<void> main() async {
   //the flutter built ui to the screen
   //this funciton takes a "widget" as an argument
   runApp(MultiProvider(
-    providers: [ChangeNotifierProvider(create: (_) => imgChange())],
+    providers: [
+      ChangeNotifierProvider(create: (_) => imgChange()),
+      ChangeNotifierProvider(create: (_) => MarkerProvier())
+    ],
     child: MyApp(),
   ));
 }
@@ -87,15 +91,10 @@ class _HomeViewState extends State<HomeView> {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => MapPage()));
-                },
-                icon: Icon(Icons.map_outlined)),
-            IconButton(
-                onPressed: () {
                   AuthWithGoogle().signOut();
                 },
-                icon: Text("log out"))
+                icon: const Text("log out")),
+
             // ignore: prefer_const_constructors
           ]),
       body: //HomePage(pCode: pCode)
@@ -108,7 +107,7 @@ class _HomeViewState extends State<HomeView> {
             ProfilePage(
               uid: SignedInAuthUser!.uid!,
             ),
-            HomePage(pCode: SignedInAuthUser!.pcode!), const MapPage()
+            HomePage(pCode: SignedInAuthUser!.pcode!), MapPage()
           ]),
     );
   }
@@ -116,11 +115,9 @@ class _HomeViewState extends State<HomeView> {
 
 Future<void> _updatePosition() async {
   Position position = await _determinePosition();
-  List pm =
-      await placemarkFromCoordinates(position.latitude, position.latitude);
 
-  SignedInAuthUser!.longitude = position.longitude;
-  SignedInAuthUser!.latitude = position.latitude;
+  SignedInAuthUser.longitude = position.longitude;
+  SignedInAuthUser.latitude = position.latitude;
 }
 
 Future<Position> _determinePosition() async {
@@ -163,22 +160,22 @@ Future<Position> _determinePosition() async {
 // constent ussers atmF
 
 class LoginScreen extends StatelessWidget {
-  Future<String?> _authUser(LoginData data) {
+  Future<String?> _authUser(LoginData data) async {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
-    return AuthWithGoogle().logInEmail(data.name, data.password);
+    return await AuthWithGoogle().logInEmail(data.name, data.password);
   }
 
-  Future<String?> _signupUser(SignupData data) {
+  Future<String?> _signupUser(SignupData data) async {
     debugPrint('Signup Email: ${data.name}, Password: ${data.password}');
     Map<String, String> userName = data.additionalSignupData!;
     print("TEST USER NAME: " + userName['UserName']!);
-    return AuthWithGoogle()
+    return await AuthWithGoogle()
         .signUpEmail(data.name!, data.password!, userName['UserName']!);
   }
 
-  Future<String?> _recoverPassword(String name) {
+  Future<String?> _recoverPassword(String name) async {
     debugPrint('Name: $name');
-    return AuthWithGoogle().forgotPassword(name);
+    return await AuthWithGoogle().forgotPassword(name);
   }
 
   @override
@@ -193,7 +190,7 @@ class LoginScreen extends StatelessWidget {
       onSignup: _signupUser,
       loginProviders: <LoginProvider>[
         LoginProvider(
-            icon: Icons.headphones,
+            icon: FontAwesomeIcons.google,
             label: 'Google',
             callback: () async {
               await AuthWithGoogle().signIn();
@@ -230,5 +227,5 @@ Future getPostCode() async {
   }
   var shortDistance = distance.reduce(min);
   var index = distance.indexOf(shortDistance);
-  SignedInAuthUser!.pcode = postcode.elementAt(index);
+  SignedInAuthUser.pcode = postcode.elementAt(index);
 }
