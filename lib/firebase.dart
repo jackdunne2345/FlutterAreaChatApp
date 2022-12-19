@@ -15,10 +15,10 @@ final CollectionReference postData =
 //**************************************************************************************************************************************************** */
 Future giveUserData(String name) async {
   return await userData
-      .doc(SignedInAuthUser!.uid)
+      .doc(signedInAuthUser.uid)
       .set({
         'bio': "Hi im new :)",
-        'profilepic': SignedInAuthUser!.profilePic,
+        'profilepic': signedInAuthUser.profilePic,
         'username': name,
         'pic1':
             "https://firebasestorage.googleapis.com/v0/b/area-app-8575b.appspot.com/o/newUser%2Fpic1.jpg?alt=media&token=76dc67a4-4774-4f5b-88d6-5bfb53a94c1b",
@@ -54,22 +54,22 @@ Future givePostData(String postText, String? uid, String postCode, String? name,
 //**************************************************************************************************************************************************** */
 
 class AuthWithGoogle {
-  final FirebaseAuth Auth_Entry_point = FirebaseAuth.instance;
+  final FirebaseAuth authEntrypoint = FirebaseAuth.instance;
   //**************************************************************************************************************************************************** */
   signOut() {
-    SignedInAuthUser = authUser();
-    Auth_Entry_point.signOut();
+    signedInAuthUser = AuthUser();
+    authEntrypoint.signOut();
   }
   //**************************************************************************************************************************************************** */
 
   //**************************************************************************************************************************************************** */
-  Duration get loginTime => Duration(milliseconds: 2250);
+  Duration get loginTime => const Duration(milliseconds: 2250);
   //**************************************************************************************************************************************************** */
 
   //**************************************************************************************************************************************************** */
   Future<String?> logInEmail(String name, String password) async {
     try {
-      await Auth_Entry_point.signInWithEmailAndPassword(
+      await authEntrypoint.signInWithEmailAndPassword(
           email: name, password: password);
       return Future.delayed(loginTime).then((_) {
         return null;
@@ -85,11 +85,10 @@ class AuthWithGoogle {
   Future<String?> signUpEmail(
       String name, String password, String screenName) async {
     try {
-      UserCredential create =
-          await Auth_Entry_point.createUserWithEmailAndPassword(
-              email: name, password: password);
+      UserCredential create = await authEntrypoint
+          .createUserWithEmailAndPassword(email: name, password: password);
 
-      SignedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
+      signedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
       //set user data to default data when account is made
       await giveUserData(screenName);
 
@@ -110,7 +109,7 @@ class AuthWithGoogle {
   //password reset using firebase
   Future<String?> forgotPassword(String name) async {
     try {
-      Auth_Entry_point.sendPasswordResetEmail(email: name);
+      authEntrypoint.sendPasswordResetEmail(email: name);
       return Future.delayed(loginTime).then((_) async {
         //this null retunr means there is no errors and will laucnh app
         return null;
@@ -130,13 +129,13 @@ class AuthWithGoogle {
 
   handleAuthState() {
     return StreamBuilder(
-        stream: Auth_Entry_point.authStateChanges(),
+        stream: authEntrypoint.authStateChanges(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
-            SignedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
-            userData.doc(SignedInAuthUser.uid).get().then((value) async {
-              SignedInAuthUser.name = await value['username'];
-              SignedInAuthUser.profilePic = await value['profilepic'];
+            signedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
+            userData.doc(signedInAuthUser.uid).get().then((value) async {
+              signedInAuthUser.name = await value['username'];
+              signedInAuthUser.profilePic = await value['profilepic'];
             });
             return HomeView();
           } else {
@@ -162,18 +161,18 @@ class AuthWithGoogle {
         idToken: googleAuth.idToken,
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
-      SignedInAuthUser = authUser();
-      SignedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
+      signedInAuthUser = AuthUser();
+      signedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
       //need to fix this
-      DocumentSnapshot<Object?> _query =
-          await userData.doc(SignedInAuthUser.uid).get();
-      if (_query.exists) {
+      DocumentSnapshot<Object?> query =
+          await userData.doc(signedInAuthUser.uid).get();
+      if (query.exists) {
       } else {
         await giveUserData(googleUser.displayName!);
       }
-      userData.doc(SignedInAuthUser.uid).get().then((value) async {
-        SignedInAuthUser.name = await value['username'];
-        SignedInAuthUser.profilePic = await value['profilepic'];
+      userData.doc(signedInAuthUser.uid).get().then((value) async {
+        signedInAuthUser.name = await value['username'];
+        signedInAuthUser.profilePic = await value['profilepic'];
       });
 
       return Future.delayed(loginTime).then((_) {
@@ -187,7 +186,7 @@ class AuthWithGoogle {
   }
 }
 
-class authUser {
+class AuthUser {
   String uid = "";
   String profilePic = "";
   double longitude = 0.0;

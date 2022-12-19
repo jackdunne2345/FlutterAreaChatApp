@@ -35,8 +35,8 @@ dependencies:
   provider: ^6.0.4
   circular_profile_avatar: ^2.0.5
   font_awesome_flutter: ^10.3.0
-  google_maps_cluster_manager: ^3.0.0+1
-  clustering_google_maps: ^0.1.2-nullsafety.3
+  
+  
   
 
 

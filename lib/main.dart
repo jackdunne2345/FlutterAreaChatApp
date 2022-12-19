@@ -17,13 +17,13 @@ import 'package:geolocator/geolocator.dart';
 //firebase imports
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
+
 import 'firebase.dart';
 import 'firebase_options.dart';
 
 //icon pacages
 
-authUser SignedInAuthUser = authUser();
+AuthUser signedInAuthUser = AuthUser();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -33,8 +33,8 @@ Future<void> main() async {
   } on FirebaseException catch (e) {
     print("ERROR FIRBASE" + e.message!);
   }
-  SignedInAuthUser = authUser();
-  await _updatePosition();
+  signedInAuthUser = AuthUser();
+  await updatePosition();
   await getPostCode();
   //runApp is a flutter function that inflates
   //the flutter built ui to the screen
@@ -105,19 +105,19 @@ class _HomeViewState extends State<HomeView> {
               children: [
             //these are the pages within the page view byu default it scrolls horizzontly
             ProfilePage(
-              uid: SignedInAuthUser!.uid!,
+              uid: signedInAuthUser.uid,
             ),
-            HomePage(pCode: SignedInAuthUser!.pcode!), MapPage()
+            HomePage(pCode: signedInAuthUser.pcode), const MapPage()
           ]),
     );
   }
 }
 
-Future<void> _updatePosition() async {
+Future<void> updatePosition() async {
   Position position = await _determinePosition();
 
-  SignedInAuthUser.longitude = position.longitude;
-  SignedInAuthUser.latitude = position.latitude;
+  signedInAuthUser.longitude = position.longitude;
+  signedInAuthUser.latitude = position.latitude;
 }
 
 Future<Position> _determinePosition() async {
@@ -160,15 +160,15 @@ Future<Position> _determinePosition() async {
 // constent ussers atmF
 
 class LoginScreen extends StatelessWidget {
-  Future<String?> _authUser(LoginData data) async {
+  Future<String?> authUser(LoginData data) async {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
     return await AuthWithGoogle().logInEmail(data.name, data.password);
   }
 
-  Future<String?> _signupUser(SignupData data) async {
+  Future<String?> signupUser(SignupData data) async {
     debugPrint('Signup Email: ${data.name}, Password: ${data.password}');
     Map<String, String> userName = data.additionalSignupData!;
-    print("TEST USER NAME: " + userName['UserName']!);
+
     return await AuthWithGoogle()
         .signUpEmail(data.name!, data.password!, userName['UserName']!);
   }
@@ -182,12 +182,12 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterLogin(
       title: 'Area App',
-      logo: AssetImage('assets/images/logo.png'),
+      logo: const AssetImage('assets/images/logo.png'),
       additionalSignupFields: [
         const UserFormField(keyName: "UserName", displayName: "Screen Name")
       ],
-      onLogin: _authUser,
-      onSignup: _signupUser,
+      onLogin: authUser,
+      onSignup: signupUser,
       loginProviders: <LoginProvider>[
         LoginProvider(
             icon: FontAwesomeIcons.google,
@@ -209,9 +209,9 @@ class LoginScreen extends StatelessWidget {
 Future getPostCode() async {
   List<double> distance = [];
   List<String> postcode = [];
-  await _updatePosition();
+
   List<Placemark> placemarks = await placemarkFromCoordinates(
-      SignedInAuthUser!.latitude, SignedInAuthUser!.longitude);
+      signedInAuthUser.latitude, signedInAuthUser.longitude);
   //get first entry in the list of placemarkers
   Placemark place = placemarks[0];
   var postCodesResponse = await http.get(Uri.parse(
@@ -219,13 +219,13 @@ Future getPostCode() async {
   final postCodesJson = jsonDecode(postCodesResponse.body.toString());
   for (var i in postCodesJson['records']) {
     distance.add(await Geolocator.distanceBetween(
-        SignedInAuthUser!.latitude,
-        SignedInAuthUser!.longitude,
+        signedInAuthUser.latitude,
+        signedInAuthUser.longitude,
         i["fields"]["latitude"] as double,
         i["fields"]["longitude"] as double));
     postcode.add(i["fields"]["postal_code"].toString());
   }
   var shortDistance = distance.reduce(min);
   var index = distance.indexOf(shortDistance);
-  SignedInAuthUser.pcode = postcode.elementAt(index);
+  signedInAuthUser.pcode = postcode.elementAt(index);
 }

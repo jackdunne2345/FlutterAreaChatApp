@@ -24,6 +24,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    updatePosition();
     return MaterialApp(
       home: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -44,9 +45,10 @@ class _HomePageState extends State<HomePage> {
                 }
                 if (snapshot.data!.size == 0) {
                   print("testtt");
-                  return const Expanded(
+                  return Expanded(
                       child: Center(
-                          child: Text("looks like no one is talking here")));
+                          child: Text("looks like no one is talking here in " +
+                              pCode)));
                 } else {
                   print(snapshot.data);
                   return Expanded(
@@ -73,7 +75,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             Visibility(
-                visible: SignedInAuthUser.pcode == pCode, child: TextEnter()),
+                visible: signedInAuthUser.pcode == pCode, child: TextEnter()),
             SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height * 0.01,
@@ -98,11 +100,11 @@ class TextEnter extends StatelessWidget {
           onEditingComplete: () async {
             await givePostData(
                 textarea.text,
-                SignedInAuthUser.uid,
-                SignedInAuthUser.pcode,
-                SignedInAuthUser.name,
+                signedInAuthUser.uid,
+                signedInAuthUser.pcode,
+                signedInAuthUser.name,
                 DateTime.now(),
-                SignedInAuthUser.profilePic);
+                signedInAuthUser.profilePic);
             textarea.clear();
           },
           decoration: const InputDecoration(
@@ -133,7 +135,7 @@ class _PostWidgetState extends State<PostWidget> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    if ("${widget.snap['uid']}" == SignedInAuthUser!.uid) {
+    if ("${widget.snap['uid']}" == signedInAuthUser.uid) {
       return Column(children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -175,12 +177,12 @@ class _PostWidgetState extends State<PostWidget> {
               alignment: Alignment.centerLeft,
               child: Column(
                 children: [
-                  Text("${widget.snap['name']}"),
+                  Text(signedInAuthUser.name),
                   ProfilePicture(
-                    name: 'Dees',
+                    name: signedInAuthUser.name,
                     radius: 25,
                     fontsize: 27,
-                    img: SignedInAuthUser.profilePic,
+                    img: signedInAuthUser.profilePic,
                   ),
                 ],
               ),
@@ -206,13 +208,12 @@ class _PostWidgetState extends State<PostWidget> {
                 alignment: Alignment.centerRight,
                 child: Column(
                   children: [
-                    Text("${widget.snap['email']}"),
+                    Text(widget.snap['name']),
                     ProfilePicture(
-                      name: 'Dees',
-                      radius: 25,
-                      fontsize: 27,
-                      img: SignedInAuthUser.profilePic,
-                    ),
+                        name: "${widget.snap['name']}",
+                        radius: 25,
+                        fontsize: 27,
+                        img: widget.snap['pic']),
                   ],
                 ),
               ),
@@ -232,7 +233,7 @@ class _PostWidgetState extends State<PostWidget> {
                       width: 200,
                       alignment: Alignment.centerLeft,
                       child: Flexible(
-                        child: Text(' ${widget.snap['post_text']}'),
+                        child: Text(widget.snap['post_text']),
                       ),
                     ),
                     Container(

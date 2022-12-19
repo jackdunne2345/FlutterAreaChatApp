@@ -13,8 +13,8 @@ import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 import '../providers/marker_provider.dart';
 
-double cLat = SignedInAuthUser.latitude;
-double cLong = SignedInAuthUser.longitude;
+double cLat = signedInAuthUser.latitude;
+double cLong = signedInAuthUser.longitude;
 
 class MapPage extends StatefulWidget {
   const MapPage({Key? key}) : super(key: key);
