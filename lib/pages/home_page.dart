@@ -44,13 +44,11 @@ class _HomePageState extends State<HomePage> {
                   );
                 }
                 if (snapshot.data!.size == 0) {
-                  print("testtt");
                   return Expanded(
                       child: Center(
                           child: Text("looks like no one is talking here in " +
                               pCode)));
                 } else {
-                  print(snapshot.data);
                   return Expanded(
                     child: ListView.builder(
                       reverse: true,
@@ -178,12 +176,7 @@ class _PostWidgetState extends State<PostWidget> {
               child: Column(
                 children: [
                   Text(signedInAuthUser.name),
-                  ProfilePicture(
-                    name: signedInAuthUser.name,
-                    radius: 25,
-                    fontsize: 27,
-                    img: signedInAuthUser.profilePic,
-                  ),
+                  ProfilePicWidget(widget.snap['pic'], widget.snap['name']),
                 ],
               ),
             )
@@ -203,37 +196,35 @@ class _PostWidgetState extends State<PostWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                height: 100,
-                width: 70,
+                margin: const EdgeInsets.all(10),
                 alignment: Alignment.centerRight,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(widget.snap['name']),
-                    ProfilePicture(
-                        name: "${widget.snap['name']}",
-                        radius: 25,
-                        fontsize: 27,
-                        img: widget.snap['pic']),
+                    ProfilePicWidget(widget.snap['pic'], widget.snap['name']),
                   ],
                 ),
               ),
               Container(
                 alignment: Alignment.centerLeft,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: const EdgeInsets.all(10),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(500)),
-                        color: Colors.grey[400],
-                      ),
                       width: 200,
                       alignment: Alignment.centerLeft,
-                      child: Flexible(
-                        child: Text(widget.snap['post_text']),
+                      child: Container(
+                        margin: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: Colors.grey[400],
+                        ),
+                        child: Flexible(
+                          child: Text(widget.snap['post_text']),
+                        ),
                       ),
                     ),
                     Container(

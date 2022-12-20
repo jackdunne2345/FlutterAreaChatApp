@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 import 'dart:math';
-import 'package:area_app/pages/image_provider.dart';
+import 'package:area_app/providers/image_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:area_app/pages/home_page.dart';
@@ -33,8 +33,8 @@ Future<void> main() async {
   } on FirebaseException catch (e) {
     print("ERROR FIRBASE" + e.message!);
   }
+
   signedInAuthUser = AuthUser();
-  await updatePosition();
   await getPostCode();
   //runApp is a flutter function that inflates
   //the flutter built ui to the screen
@@ -81,33 +81,42 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          key: const Key("app bar"),
           // this is the app bar and will render above the body wich contains the page view
           backgroundColor: Colors.blue,
           elevation: 0,
           title: const Text(
+            key: Key("text"),
             "Area App",
             style: TextStyle(color: Colors.white),
           ),
           actions: [
             IconButton(
+                key: const Key("iconbutton"),
                 onPressed: () {
                   AuthWithGoogle().signOut();
                 },
-                icon: const Text("log out")),
+                icon: const Text(key: Key("text"), "log out")),
 
             // ignore: prefer_const_constructors
           ]),
       body: //HomePage(pCode: pCode)
           PageView(
+              key: const Key("the swiper page view"),
               pageSnapping: true,
               //page view allows widgets to be rendered in this widgets scaffold in a scrollable view
               controller: pageController,
               children: [
             //these are the pages within the page view byu default it scrolls horizzontly
             ProfilePage(
+              key: const Key("profile view"),
               uid: signedInAuthUser.uid,
             ),
-            HomePage(pCode: signedInAuthUser.pcode), const MapPage()
+            HomePage(
+                key: const Key("home view"), pCode: signedInAuthUser.pcode),
+            const MapPage(
+              key: Key("map page"),
+            )
           ]),
     );
   }
@@ -181,6 +190,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
+      key: const Key("login page"),
       title: 'Area App',
       logo: const AssetImage('assets/images/logo.png'),
       additionalSignupFields: [
@@ -207,6 +217,7 @@ class LoginScreen extends StatelessWidget {
 //get post code
 // i calcualte what post code marker youa re clsoest to using geolocator package
 Future getPostCode() async {
+  await updatePosition();
   List<double> distance = [];
   List<String> postcode = [];
 
@@ -227,5 +238,5 @@ Future getPostCode() async {
   }
   var shortDistance = distance.reduce(min);
   var index = distance.indexOf(shortDistance);
-  signedInAuthUser.pcode = postcode.elementAt(index);
+  signedInAuthUser.pcode = place.postalCode!.substring(0, 3);
 }

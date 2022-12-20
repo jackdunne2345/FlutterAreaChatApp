@@ -51,7 +51,6 @@ class _MapPageState extends State<MapPage> {
 //get country code
   Future<void> getCountry(double long, double lat, BuildContext context) async {
     double lat1;
-
     double long1;
     lat1 = lat;
     long1 = long;
@@ -86,11 +85,6 @@ class _MapPageState extends State<MapPage> {
                   ),
                 ),
               );
-              // Get.to(
-              //   HomePage(
-              //     pCode: i["fields"]["postal_code"].toString(),
-              //   ),
-              // );
             },
           ),
         );

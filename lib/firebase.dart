@@ -161,7 +161,7 @@ class AuthWithGoogle {
         idToken: googleAuth.idToken,
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
-      signedInAuthUser = AuthUser();
+
       signedInAuthUser.uid = FirebaseAuth.instance.currentUser!.uid;
       //need to fix this
       DocumentSnapshot<Object?> query =
@@ -193,11 +193,4 @@ class AuthUser {
   double latitude = 0.0;
   String pcode = "";
   String name = "";
-  String bio = "";
-  String pic1 = "";
-  String pic2 = "";
-  String pic3 = "";
-  String pic4 = "";
-  String pic5 = "";
-  String pic6 = "";
 }

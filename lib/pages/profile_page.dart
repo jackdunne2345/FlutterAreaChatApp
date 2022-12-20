@@ -13,7 +13,7 @@ import '/firebase.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:area_app/main.dart';
 import 'package:provider/provider.dart';
-import 'image_provider.dart';
+import '../providers/image_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   String uid;
@@ -55,7 +55,6 @@ class _ProfilePageState extends State<ProfilePage> {
           String name = data['username'];
           String bio = data['bio'];
           String pp = data['profilepic'];
-          print(pp);
 
           return SingleChildScrollView(
               child: Column(
@@ -69,7 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Row(
                   children: [
                     ProfilePicture(
-                      img: '',
+                      img: pp,
                       name: name,
                       radius: 31,
                       fontsize: 27,
@@ -152,22 +151,21 @@ class EditProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     userData.doc(signedInAuthUser.uid).get().then((value) {
       Provider.of<imgChange>(context, listen: false).setPic1 = value['pic1'];
-      signedInAuthUser.pic1 = value['pic1'];
+
       Provider.of<imgChange>(context, listen: false).setPic2 = value['pic2'];
-      signedInAuthUser.pic2 = value['pic2'];
+
       Provider.of<imgChange>(context, listen: false).setPic3 = value['pic3'];
-      signedInAuthUser.pic3 = value['pic3'];
+
       Provider.of<imgChange>(context, listen: false).setPic4 = value['pic4'];
-      signedInAuthUser.pic4 = value['pic4'];
+
       Provider.of<imgChange>(context, listen: false).setPic5 = value['pic5'];
-      signedInAuthUser.pic5 = value['pic5'];
+
       Provider.of<imgChange>(context, listen: false).setPic6 = value['pic6'];
-      signedInAuthUser.pic6 = value['pic6'];
+
       Provider.of<imgChange>(context, listen: false).setPP =
           value['profilepic'];
-      signedInAuthUser.profilePic = value['profilepic'];
+
       Provider.of<imgChange>(context, listen: false).setBio = value['bio'];
-      signedInAuthUser.bio = value['bio'];
     });
 
     return Consumer<imgChange>(builder: (_, provider, __) {
@@ -197,7 +195,7 @@ class GridViewWidget extends StatelessWidget {
     String pic5 = context.watch<imgChange>().pic5;
     String pic6 = context.watch<imgChange>().pic6;
     TextEditingController textarea = TextEditingController();
-    textarea.text = context.watch<imgChange>().bio;
+    textarea.text = bio;
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(actions: [
@@ -211,7 +209,7 @@ class GridViewWidget extends StatelessWidget {
                     Reference imgToUpload = userFolder.child('pic1');
                     await imgToUpload.putFile(File(pic1));
                     String url = await imgToUpload.getDownloadURL();
-                    signedInAuthUser.pic1 = url;
+                    pic1 = url;
                   } catch (error) {
                     print(error.toString());
                   }
@@ -221,29 +219,29 @@ class GridViewWidget extends StatelessWidget {
                   Reference imgToUpload = userFolder.child('pic2');
                   await imgToUpload.putFile(File(pic2));
                   String url = await imgToUpload.getDownloadURL();
-                  signedInAuthUser.pic2 = url;
+                  pic2 = url;
                 }
                 if (pic3.startsWith("https://")) {
                 } else {
                   Reference imgToUpload = userFolder.child('pic3');
                   await imgToUpload.putFile(File(pic3));
                   String url = await imgToUpload.getDownloadURL();
-                  signedInAuthUser.pic3 = url;
+                  pic3 = url;
                 }
                 if (pic4.startsWith("https://")) {
                 } else {
                   Reference imgToUpload = userFolder.child('pic4');
                   await imgToUpload.putFile(File(pic4));
                   String url = await imgToUpload.getDownloadURL();
-                  signedInAuthUser.pic4 = url;
+                  pic4 = url;
                 }
 
-                if (pic4.startsWith("https://")) {
+                if (pic5.startsWith("https://")) {
                 } else {
                   Reference imgToUpload = userFolder.child('pic5');
                   await imgToUpload.putFile(File(pic5));
                   String url = await imgToUpload.getDownloadURL();
-                  signedInAuthUser.pic5 = url;
+                  pic5 = url;
                 }
 
                 if (pic6.startsWith("https://")) {
@@ -251,7 +249,7 @@ class GridViewWidget extends StatelessWidget {
                   Reference imgToUpload = userFolder.child('pic6');
                   await imgToUpload.putFile(File(pic6));
                   String url = await imgToUpload.getDownloadURL();
-                  signedInAuthUser.pic6 = url;
+                  pic6 = url;
                 }
                 if (pp.startsWith("https://")) {
                 } else if (pp == "") {
@@ -259,24 +257,22 @@ class GridViewWidget extends StatelessWidget {
                   Reference imgToUpload = userFolder.child('ProfilePic');
                   await imgToUpload.putFile(File(pp));
                   String url = await imgToUpload.getDownloadURL();
-                  signedInAuthUser.profilePic = url;
+                  pp = url;
                 }
 
-                userData
-                    .doc(signedInAuthUser.uid)
-                    .set({
-                      'bio': textarea.text,
-                      'profilepic': signedInAuthUser.profilePic,
-                      'pic1': signedInAuthUser.pic1,
-                      'pic2': signedInAuthUser.pic2,
-                      'pic3': signedInAuthUser.pic3,
-                      'pic4': signedInAuthUser.pic4,
-                      'pic5': signedInAuthUser.pic5,
-                      'pic6': signedInAuthUser.pic6,
-                      'username': signedInAuthUser.name
-                    })
-                    .then((value) => print("Data added"))
-                    .catchError((error) => print("Failed to add data: $error"));
+                userData.doc(signedInAuthUser.uid).set({
+                  'bio': textarea.text,
+                  'profilepic': pp,
+                  'pic1': pic1,
+                  'pic2': pic2,
+                  'pic3': pic3,
+                  'pic4': pic4,
+                  'pic5': pic5,
+                  'pic6': pic6,
+                  'username': signedInAuthUser.name
+                }).then((value) {
+                  signedInAuthUser.profilePic = pp;
+                }).catchError((error) => print("Failed to add data: $error"));
               },
               child: Text(style: TextStyle(color: Colors.white), "Save")),
           TextButton(
@@ -504,7 +500,13 @@ class GridViewWidget extends StatelessWidget {
                 width: 500,
                 margin: const EdgeInsets.all(10),
                 child: TextField(
-                    maxLength: 350, maxLines: 8, controller: textarea),
+                    maxLength: 350,
+                    maxLines: 8,
+                    onChanged: (text) {
+                      Provider.of<imgChange>(context, listen: false).setBio =
+                          text;
+                    },
+                    controller: textarea),
               )
             ],
           ),
@@ -558,7 +560,7 @@ class ProfilePicWidget extends StatelessWidget {
       );
     } else {
       return Visibility(
-        visible: context.watch<imgChange>().pp != "",
+        visible: pic != "",
         child: CircularProfileAvatar(
           '',
           elevation: 2,
